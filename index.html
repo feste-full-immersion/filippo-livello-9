@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Filippo Livello 9</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Mondo unico, scuro: blu elettrico del kit da tavola + verde neon dei sacchetti.
+   Layout: una colonna da telefono, una schermata alla volta come in una console. */
+:root{
+  --notte:#06103a; --blu:#1546d1; --ciano:#3fd2ff; --neon:#39ff6a; --sole:#ffd23f; --brace:#ff6a2b;
+  --rosso:#ff3b4e; --giallo:#ffd23f; --verde:#2fe36a; --azzurro:#2f8bff;
+  --carta:#e9f1ff; --tenue:#9fb3e6;
+  --pixel:"Press Start 2P", ui-monospace, monospace;
+  --testo:"Chakra Petch", system-ui, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--notte);color:var(--carta);font-family:var(--testo);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(120% 70% at 50% 0%, rgba(63,210,255,.25), transparent 60%),linear-gradient(180deg,#0a1b5c 0%, var(--notte) 70%);}
+#hex{position:fixed;inset:0;z-index:0;opacity:.22;pointer-events:none;width:100%;height:100%}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100%;padding:16px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.proto{font-family:var(--pixel);font-size:8px;letter-spacing:.06em;color:var(--notte);background:var(--sole);padding:6px 8px;border-radius:2px;text-align:center;line-height:1.6}
+.screen{display:none;flex-direction:column;gap:16px}
+.screen.on{display:flex;animation:entra .25s steps(4)}
+@keyframes entra{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.on{animation:none}.blink{animation:none!important}}
+h1,h2,h3{font-family:var(--pixel);font-weight:400;margin:0;text-wrap:balance;line-height:1.5}
+.titolo{font-size:20px;background:linear-gradient(180deg,var(--sole) 0%,var(--sole) 45%,var(--brace) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(3px 3px 0 #000) drop-shadow(0 0 10px rgba(255,106,43,.35));text-align:center}
+h2{font-size:13px;color:var(--neon);text-shadow:2px 2px 0 #000}
+h3{font-size:10px;color:var(--ciano)}
+p{margin:0}
+.sotto{font-family:var(--pixel);font-size:9px;color:var(--tenue);text-align:center;line-height:1.8}
+.pannello{background:linear-gradient(180deg,rgba(21,70,209,.55),rgba(12,31,110,.85));border:3px solid var(--ciano);box-shadow:0 0 0 3px #000, 0 0 18px rgba(63,210,255,.35) inset;border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.btn{font-family:var(--pixel);font-size:12px;line-height:1.5;border:0;border-radius:3px;padding:16px 14px;cursor:pointer;color:#0a0a14;box-shadow:0 5px 0 #000, inset 0 -4px 0 rgba(0,0,0,.25);transition:transform .05s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #000, inset 0 -4px 0 rgba(0,0,0,.25)}
+.btn:focus-visible,.chip:focus-visible,.freccia:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.liv:focus-visible{outline:3px solid var(--sole);outline-offset:3px}
+.btn[disabled]{filter:grayscale(1) brightness(.6);cursor:not-allowed}
+.b-verde{background:var(--verde)}.b-giallo{background:var(--giallo)}.b-rosso{background:var(--rosso);color:#fff}.b-blu{background:var(--azzurro);color:#fff}
+.riga{display:flex;gap:12px}.riga>*{flex:1}
+canvas.px{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.nota{font-size:14px;color:var(--tenue)}
+a{color:var(--ciano)}
+
+/* Boot */
+#boot .cartuccia{margin:24px auto 0;width:220px;padding:18px 14px 26px;background:#2a2f3a;border:4px solid #000;border-radius:6px 6px 2px 2px;box-shadow:inset 0 0 0 4px #3b4252;text-align:center}
+#boot .etichetta{background:linear-gradient(180deg,var(--blu),#0a1b5c);border:3px solid #000;padding:14px 8px;display:flex;flex-direction:column;gap:10px;align-items:center}
+#boot .etichetta b{font-family:var(--pixel);font-size:13px;color:var(--sole);font-weight:400}
+#boot .etichetta span{font-family:var(--pixel);font-size:9px;color:var(--neon)}
+.barra{height:14px;border:3px solid #000;background:#000;width:100%}
+.barra i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--neon) 0 8px,#1fbf4e 8px 10px)}
+
+/* Locandina */
+.poster{border:4px solid #000;box-shadow:0 0 0 3px var(--sole),0 0 28px rgba(255,210,63,.35);background:#000}
+.poster canvas{width:100%;height:auto}
+.poster .testa{padding:14px 12px 4px;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,#0a1b5c,#06103a)}
+.poster .testa .titolo{font-size:18px}
+.poster .slogan{font-family:var(--pixel);font-size:9px;line-height:1.8;color:var(--neon);text-align:center}
+.dati{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:16px;margin:0}
+.dati dt{font-family:var(--pixel);font-size:9px;color:var(--ciano);padding-top:5px}
+.dati dd{margin:0}
+
+/* Scelta sì/no */
+.grande{font-size:15px;padding:22px 14px}
+
+/* Fumetti e storia */
+.vignetta canvas{margin:0 auto;width:160px;height:160px}
+.fumetto{font-size:17px;text-align:center;min-height:5.5em;display:flex;align-items:center;justify-content:center}
+.puntini{display:flex;gap:8px;justify-content:center}
+.puntini i{width:10px;height:10px;background:#1b2350;border:2px solid #000}
+.puntini i.on{background:var(--neon)}
+
+/* Crea */
+.anteprima{display:flex;gap:14px;align-items:center}
+.anteprima canvas{width:112px;height:112px;background:repeating-conic-gradient(#183a9e 0 25%, #12307f 0 50%) 0 0/14px 14px;border:3px solid #000;flex:none}
+.nick{font-family:var(--pixel);font-size:13px;color:var(--sole);line-height:1.7;word-break:break-word}
+.stato{font-size:14px;color:var(--tenue)}.stato.preso{color:var(--rosso)}.stato.libero{color:var(--neon)}
+.selettore{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}
+.freccia{font-family:var(--pixel);font-size:14px;height:48px;border:3px solid #000;background:var(--azzurro);color:#fff;border-radius:3px;cursor:pointer}
+.valore{font-family:var(--pixel);font-size:11px;text-align:center;background:#000;color:var(--neon);padding:15px 6px;border-radius:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-width:44px;height:44px;border:3px solid #000;border-radius:3px;cursor:pointer;font-family:var(--testo);font-weight:600;font-size:14px;padding:0 10px;background:#123a9a;color:var(--carta)}
+.chip[aria-pressed="true"]{outline:3px solid var(--sole);outline-offset:2px}
+.colore{width:44px;padding:0}
+.etic{font-family:var(--pixel);font-size:9px;color:var(--ciano);margin-bottom:-4px}
+
+/* Scelte */
+form{display:flex;flex-direction:column;gap:14px}
+label{font-weight:600;font-size:15px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=tel],select,textarea{font:inherit;font-size:16px;padding:12px;border:3px solid #000;border-radius:3px;background:#e9f1ff;color:#06103a;width:100%}
+textarea{min-height:64px;resize:vertical}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+legend{font-weight:600;font-size:15px;margin-bottom:6px}
+.opz{display:flex;flex-wrap:wrap;gap:8px}
+.opz label{flex-direction:row;align-items:center;gap:8px;background:#123a9a;border:3px solid #000;border-radius:3px;padding:10px 12px;font-weight:400;cursor:pointer}
+.opz input{accent-color:var(--neon);width:18px;height:18px}
+.errore{color:var(--rosso);font-weight:600;font-size:15px;min-height:1.2em}
+.avviso{background:var(--sole);color:#06103a;border:3px solid #000;padding:12px;font-weight:600;border-radius:3px}
+
+/* Tabellone */
+.barra-top{display:flex;gap:12px;align-items:center}
+.barra-top canvas{width:60px;height:60px;background:#12307f;border:3px solid #000;flex:none}
+.barra-top .nick{font-size:11px;flex:1}
+.menu-btn{font-family:var(--pixel);font-size:16px;width:52px;height:52px;border:3px solid #000;background:var(--azzurro);color:#fff;border-radius:3px;cursor:pointer;flex:none}
+#menuTab{display:none;flex-direction:column;gap:10px}
+#menuTab.on{display:flex}
+#titTab{cursor:default;user-select:none}
+.griglia{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.liv{aspect-ratio:1;border:3px solid #000;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:var(--pixel);font-size:16px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#2f8bff,#1546d1);box-shadow:0 4px 0 #000;padding:4px;text-align:center}
+.liv small{font-family:var(--testo);font-size:12px;font-weight:600;line-height:1.2}
+.liv.chiuso{background:#1b2350;color:#6f7fb8;cursor:default;box-shadow:none}
+.liv.fatto{background:linear-gradient(180deg,#39ff6a,#1fae47);color:#04210e}
+.liv.boss{background:repeating-linear-gradient(45deg,#3a0b44 0 8px,#24062b 8px 16px);color:var(--rosso);cursor:pointer}
+.candele{display:flex;justify-content:space-between;gap:4px}
+.candele canvas{width:28px;height:42px}
+.cont{font-family:var(--pixel);font-size:10px;text-align:center;color:var(--neon);line-height:1.8}
+.cont b{font-size:18px;color:var(--sole);font-weight:400}
+
+/* Gioco */
+#gioco .schermo{position:relative;border:4px solid #000;box-shadow:0 0 0 3px var(--ciano),0 0 24px rgba(63,210,255,.4);background:#000}
+#gioco canvas{width:100%;height:auto;touch-action:manipulation}
+#gioco .aiuto{font-size:15px;text-align:center;color:var(--tenue)}
+.overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(4,8,30,.84);padding:12px;text-align:center}
+.overlay.on{display:flex}
+.overlay h2{font-size:12px}
+.overlay p{font-size:15px}
+#dialogo{position:fixed;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:rgba(4,8,30,.9);padding:24px}
+#dialogo.on{display:flex}
+#dialogo .pannello{max-width:420px;text-align:center;align-items:center}
+#sottotitolo{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;max-width:440px;width:calc(100% - 32px);background:#000;border:3px solid var(--neon);color:var(--carta);font-size:15px;padding:10px 12px;border-radius:3px;display:none;text-align:center}
+#sottotitolo.on{display:block}
+</style>
+</head>
+<body>
+<canvas id="hex" aria-hidden="true"></canvas>
+<main class="app">
+  <div class="proto">PROTOTIPO · I DATI NON VENGONO INVIATI</div>
+
+  <!-- 0 BOOT -->
+  <section class="screen on" id="boot" aria-label="Accensione">
+    <div class="cartuccia"><div class="etichetta"><b>FILIPPO</b><span>LIVELLO 9</span></div></div>
+    <p class="sotto">Alza il volume e togli il silenzioso:<br>ci sono voci, musica ed effetti</p>
+    <div class="barra" aria-hidden="true"><i id="carica"></i></div>
+    <button class="btn b-verde" id="start">PREMI START</button>
+    <button class="btn b-blu" id="muto">ENTRA SENZA AUDIO</button>
+  </section>
+
+  <!-- 1 LOCANDINA -->
+  <section class="screen" id="locandina" aria-label="L'invito">
+    <div class="poster">
+      <div class="testa">
+        <h1 class="titolo">FILIPPO COMPIE 9 ANNI!</h1>
+        <p class="slogan">IL COMPLEANNO È UN VIDEOGIOCO.<br>E TU SEI UN GIOCATORE.</p>
+      </div>
+      <canvas class="px" id="posterCv" width="160" height="112" aria-label="Il castello di Re Glitch, Filippo e le 9 candeline"></canvas>
+    </div>
+    <div class="pannello">
+      <p>Re Glitch ha rubato le 9 candeline di Filippo. Per riprenderle servono tutti i giocatori della classe!</p>
+      <dl class="dati">
+        <dt>QUANDO</dt><dd>Domenica 15 novembre 2026, dalle 15:00 alle 18:30</dd>
+        <dt>DOVE</dt><dd>Cinelandia Milano Certosa · <a href="https://www.google.com/maps/search/?api=1&query=Cinelandia+Milano+Certosa" target="_blank" rel="noopener">apri la mappa</a></dd>
+        <dt>COSA</dt><dd>Park (Kids Village, Ninja e The Climb), sala giochi, merenda, torta e un film al cinema</dd>
+        <dt>ENTRO</dt><dd>Rispondi entro domenica 8 novembre</dd>
+      </dl>
+    </div>
+    <button class="btn b-giallo" id="aRisposta">AVANTI ▶</button>
+  </section>
+
+  <!-- 2 CI SARAI? -->
+  <section class="screen" id="risposta" aria-label="Ci sarai?">
+    <h1 class="titolo">CI SARAI?</h1>
+    <div class="pannello"><p style="text-align:center">Domenica 15 novembre, dalle 15:00 alle 18:30, al Cinelandia Milano Certosa.</p></div>
+    <button class="btn b-verde grande" id="rSi">SÌ, CI SARÒ!</button>
+    <button class="btn b-rosso grande" id="rNo">NO, NON POSSO</button>
+    <p class="nota" style="text-align:center">Puoi cambiare risposta anche dopo, dal menù del gioco.</p>
+  </section>
+
+  <!-- 3 COME FUNZIONA -->
+  <section class="screen vignetta" id="come" aria-label="Come funziona">
+    <h2 style="text-align:center">COME FUNZIONA</h2>
+    <canvas class="px" id="comeCv" width="16" height="16"></canvas>
+    <div class="pannello"><p class="fumetto" id="comeTxt" aria-live="polite"></p></div>
+    <div class="puntini" id="comePunti" aria-hidden="true"></div>
+    <button class="btn b-giallo" id="comeAvanti">AVANTI ▶</button>
+  </section>
+
+  <!-- 4 PERSONAGGIO -->
+  <section class="screen" id="crea" aria-label="Crea il tuo giocatore">
+    <h1 class="titolo">CREA IL TUO GIOCATORE</h1>
+    <div class="pannello">
+      <div class="anteprima">
+        <canvas class="px" id="avCv" width="16" height="16" aria-label="Anteprima del personaggio"></canvas>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="nick" id="nickTxt"></div>
+          <div class="stato" id="nickStato" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="etic">IL TUO NICKNAME</div>
+      <div class="selettore">
+        <button class="freccia" data-p="a" data-d="-1" aria-label="Prima parola precedente">◀</button>
+        <div class="valore" id="pa"></div>
+        <button class="freccia" data-p="a" data-d="1" aria-label="Prima parola successiva">▶</button>
+      </div>
+      <div class="selettore">
+        <button class="freccia" data-p="b" data-d="-1" aria-label="Seconda parola precedente">◀</button>
+        <div class="valore" id="pb"></div>
+        <button class="freccia" data-p="b" data-d="1" aria-label="Seconda parola successiva">▶</button>
+      </div>
+      <button class="btn b-blu" id="dado">🎲 RIMESCOLA</button>
+    </div>
+    <div class="pannello">
+      <div class="etic">COLORE DEL CONTROLLER</div><div class="chips" id="chColore"></div>
+      <div class="etic">CAPELLI</div><div class="chips" id="chCapelli"></div>
+      <div class="etic">COLORE DEI CAPELLI</div><div class="chips" id="chTinta"></div>
+      <div class="etic">CARNAGIONE</div><div class="chips" id="chPelle"></div>
+    </div>
+    <button class="btn b-verde" id="salvaG">SONO PRONTO!</button>
+  </section>
+
+  <!-- 5 SCELTE -->
+  <section class="screen" id="scelte" aria-label="Le scelte">
+    <h1 class="titolo">PER MAMMA O PAPÀ</h1>
+    <p class="avviso" id="mancano" hidden>Mancano ancora le scelte del menù: chiedi a mamma o papà di completarle per aprire il tabellone.</p>
+    <div class="pannello">
+      <p>Passa il telefono a mamma o papà: bastano due minuti. Poi si gioca!</p>
+      <form id="form" novalidate>
+        <label for="nome">Nome e cognome del bambino o della bambina
+          <input type="text" id="nome" autocomplete="off" placeholder="Es. Giulia Rossi">
+        </label>
+        <label for="menu">Baby menù
+          <select id="menu">
+            <option value="">Scegli…</option>
+            <option>Burger (carne, insalata, pomodoro, ketchup)</option>
+            <option>Cheeseburger (con cheddar)</option>
+            <option>Trancio di pizza margherita</option>
+            <option>Trancio di pizza con wurstel</option>
+            <option>Nuggets di pollo (4 pezzi)</option>
+          </select>
+          <span class="nota">Con patatine e bibita.</span>
+        </label>
+        <label for="bibita">Bibita
+          <select id="bibita">
+            <option value="">Scegli…</option>
+            <option>Cola</option><option>Cola zero</option><option>Tè al limone</option><option>Tè alla pesca</option><option>Acqua naturale</option><option>Acqua frizzante</option>
+          </select>
+        </label>
+        <fieldset>
+          <legend>Celiachia</legend>
+          <div class="opz">
+            <label><input type="radio" name="cel" value="no" id="cel-no" checked> No</label>
+            <label><input type="radio" name="cel" value="si" id="cel-si"> Sì, è celiaco/a</label>
+          </div>
+          <span class="nota">Al Cinelandia non c'è nulla senza glutine: chi è celiaco porta la merenda da casa e paga solo l'ingresso. Lo segnaliamo noi.</span>
+        </fieldset>
+        <label for="allergie">Allergie o intolleranze
+          <textarea id="allergie" placeholder="Lascia vuoto se non ce ne sono"></textarea>
+        </label>
+        <fieldset>
+          <legend>Un genitore può restare?</legend>
+          <div class="opz">
+            <label><input type="radio" name="gen" value="sala" id="gen-sala"> Sì, posso accompagnare in sala</label>
+            <label><input type="radio" name="gen" value="no" id="gen-no"> No, torno a prenderlo/a alle 18:30</label>
+          </div>
+          <span class="nota">Al cinema serve un adulto ogni 5 bambini: chi accompagna ha il biglietto omaggio.</span>
+        </fieldset>
+        <label for="tel">Telefono di un genitore
+          <input type="tel" id="tel" autocomplete="tel" placeholder="Es. 333 123 4567">
+        </label>
+        <p class="errore" id="errore" role="alert"></p>
+        <button class="btn b-verde" type="submit">CONFERMA E GIOCA</button>
+      </form>
+    </div>
+    <div class="pannello">
+      <h3>AREA GENITORI</h3>
+      <p>Arrivo alle 15:00, ritiro alle 18:30. Al Cinelandia non si può portare cibo da casa, a parte la merenda per chi è celiaco. Per qualsiasi domanda: scrivete a Valentina, al numero del messaggio con cui avete ricevuto questo invito.</p>
+      <p class="nota">Nickname e personaggio si vedono nel gioco; nome, telefono e allergie li leggono solo gli organizzatori.</p>
+    </div>
+  </section>
+
+  <!-- 6 TABELLONE -->
+  <section class="screen" id="tabellone" aria-label="Il tabellone">
+    <div class="pannello">
+      <div class="barra-top">
+        <canvas class="px" id="tabAv" width="16" height="16"></canvas>
+        <div class="nick" id="tabNick"></div>
+        <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menuTab" aria-label="Menù">☰</button>
+      </div>
+      <div id="menuTab">
+        <button class="btn b-giallo" id="mLocandina">RIVEDI L'INVITO</button>
+        <button class="btn b-blu" id="mRisposta">CAMBIA RISPOSTA</button>
+        <button class="btn b-blu" id="mScelte">CAMBIA LE SCELTE</button>
+        <button class="btn b-blu" id="mGiocatore">CAMBIA GIOCATORE</button>
+        <button class="btn b-blu" id="mCome">COME FUNZIONA</button>
+        <button class="btn b-blu" id="mMusica">MUSICA: SÌ</button>
+        <button class="btn b-blu" id="mAudio">AUDIO: SÌ</button>
+      </div>
+    </div>
+    <h2 id="titTab">LE 9 CANDELINE</h2>
+    <div class="candele" id="candele"></div>
+    <div class="griglia" id="griglia"></div>
+    <div class="pannello">
+      <p class="cont">GIOCATORI PRONTI<br><b id="pronti">7</b> SU 18</p>
+      <p class="nota" style="text-align:center">Nel prototipo il numero è un esempio: con il Foglio collegato si aggiorna da solo.</p>
+    </div>
+    <p class="nota" style="text-align:center" id="trucco">Versione di prova: tocca 5 volte «LE 9 CANDELINE» per aprire tutti i livelli.</p>
+  </section>
+
+  <!-- GIOCO -->
+  <section class="screen" id="gioco" aria-label="Livello">
+    <h2 id="titLiv">LIVELLO 1</h2>
+    <div class="schermo">
+      <canvas class="px" id="cv" width="256" height="224"></canvas>
+      <div class="overlay on" id="ovPronto">
+        <h2 id="prontoTit">TOCCA PER SALTARE</h2>
+        <p id="prontoTxt"></p>
+        <button class="btn b-verde" id="via">VIA!</button>
+      </div>
+      <div class="overlay" id="ovFine">
+        <h2 id="fineTit"></h2>
+        <p id="fineTxt"></p>
+        <div class="riga" style="width:100%">
+          <button class="btn b-giallo" id="rigioca">RIGIOCA</button>
+          <button class="btn b-blu" id="aTab">TABELLONE</button>
+        </div>
+      </div>
+    </div>
+    <p class="aiuto" id="aiutoTxt">Tocca lo schermo (o premi la barra spaziatrice) per saltare.</p>
+    <button class="btn b-blu" id="esci">◀ TORNA AL TABELLONE</button>
+  </section>
+</main>
+
+<div id="dialogo" role="dialog" aria-modal="true" aria-labelledby="dTit">
+  <div class="pannello">
+    <canvas class="px" id="dAv" width="16" height="16" style="width:96px;height:96px"></canvas>
+    <h2 id="dTit"></h2>
+    <p id="dTxt"></p>
+    <p class="nota" id="dNota">Prototipo: in questa versione i dati restano sul telefono.</p>
+    <button class="btn b-giallo" id="dOk">OK</button>
+  </div>
+</div>
+<div id="sottotitolo" aria-live="polite"></div>
+
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem("fl9_"+k);return v?JSON.parse(v):d}catch(e){return d}},
+             set(k,v){try{localStorage.setItem("fl9_"+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- Sfondo a esagoni ---------- */
+function hexBg(){const c=$("hex"),d=window.devicePixelRatio||1;c.width=innerWidth*d;c.height=innerHeight*d;
+  const g=c.getContext("2d");g.scale(d,d);g.strokeStyle="#3fd2ff";g.lineWidth=1;const r=22,h=r*Math.sqrt(3);
+  for(let y=-h;y<innerHeight+h;y+=h)for(let x=-r,i=0;x<innerWidth+r*2;x+=r*1.5,i++){const yy=y+(i%2?h/2:0);
+    g.beginPath();for(let k=0;k<6;k++){const a=Math.PI/3*k;g[k?"lineTo":"moveTo"](x+r*Math.cos(a),yy+r*Math.sin(a))}g.closePath();g.stroke();}}
+hexBg();addEventListener("resize",hexBg);
+
+/* ---------- Audio ---------- */
+let ac=null,audioOn=store.get("audio",true),musicaSi=store.get("musica",true),musica=null,brano="",mg=null;
+function initAudio(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();mg=ac.createGain();mg.gain.value=1;mg.connect(ac.destination)}catch(e){ac=null}}
+function nota(f,t0,dur,tipo="square",vol=.06,dest){if(!audioOn||!ac)return;const o=ac.createOscillator(),g=ac.createGain();
+  o.type=tipo;o.frequency.value=f;g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);o.connect(g).connect(dest||ac.destination);o.start(t0);o.stop(t0+dur+.02)}
+const N=s=>440*Math.pow(2,(s-69)/12);
+function sfx(nome){if(!audioOn||!ac)return;const t=ac.currentTime;
+  if(nome==="salto"||nome==="salto2"){const o=ac.createOscillator(),g=ac.createGain();o.type="square";const a=nome==="salto"?300:500;o.frequency.setValueAtTime(a,t);o.frequency.exponentialRampToValueAtTime(a*2.3,t+.12);
+    g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+.15);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.16)}
+  if(nome==="moneta"){nota(N(83),t,.06);nota(N(88),t+.06,.14)}
+  if(nome==="colpo"){nota(N(45),t,.18,"sawtooth",.08);nota(N(40),t+.1,.22,"sawtooth",.08)}
+  if(nome==="caduta"){[64,60,57,52,48].forEach((n,i)=>nota(N(n),t+i*.06,.08,"square",.06))}
+  if(nome==="click"){nota(N(76),t,.05,"square",.04)}
+  if(nome==="start"){[72,76,79,84].forEach((n,i)=>nota(N(n),t+i*.09,.12))}
+  if(nome==="vittoria"){[72,76,79,84,79,84,88].forEach((n,i)=>nota(N(n),t+i*.11,i===6?.5:.13))}
+  if(nome==="gameover"){[67,63,60,55].forEach((n,i)=>nota(N(n),t+i*.18,.22,"triangle",.09))}
+  if(nome==="aiuto"){[72,79,84,91].forEach((n,i)=>nota(N(n),t+i*.08,.16,"triangle",.07))}
+  if(nome==="registrato"){[60,64,67,72,76,79,84].forEach((n,i)=>nota(N(n),t+i*.07,.12));nota(N(84),t+.55,.6,"triangle",.07)}}
+/* Musica originale in stile sala giochi anni '80 (composta per questo gioco). Ogni passo è un ottavo; 0 = pausa. */
+const BRANI={
+ menu:{ms:200,lead:[76,0,79,76,72,74,76,0,77,0,81,77,74,76,77,0,79,0,84,79,76,77,79,0,81,79,77,76,74,72,74,0],
+   basso:[48,55,48,55,53,60,53,60,55,62,55,62,50,57,55,55]},
+ liv:{ms:140,lead:[72,79,76,79,72,79,76,79,74,81,77,81,74,81,77,81,76,83,79,83,76,83,79,83,77,76,74,72,71,72,74,79],
+   basso:[48,48,48,48,50,50,50,50,52,52,52,52,53,55,55,55]}};
+function suona(nome,n){if(!audioOn||!musicaSi||!ac)return;const id=nome+(n||"");if(musica&&brano===id)return;musicaOff();brano=id;
+  const B=BRANI[nome];const tr=(nome==="liv"&&n%2===0)?-3:0;const ms=nome==="liv"?Math.max(104,B.ms-n*4):B.ms;let i=0;
+  musica=setInterval(()=>{if(!ac)return;const t=ac.currentTime,k=i%32,l=B.lead[k];
+    if(l)nota(N(l+tr),t,ms/1000*.9,"square",nome==="menu"?.022:.026,mg);
+    if(k%2===0)nota(N(B.basso[k/2]+tr-12),t,ms/1000*1.6,"triangle",.06,mg);
+    if(nome==="liv"&&k%4===2)nota(N(96),t,.03,"square",.012,mg);i++},ms)}
+function musicaOn(n){suona("liv",n)}
+function musicaOff(){if(musica){clearInterval(musica);musica=null;brano=""}}
+function abbassa(si){if(mg&&ac)mg.gain.setTargetAtTime(si?.25:1,ac.currentTime,.08)}
+
+/* Voci: qui arriveranno gli mp3 generati con ElevenLabs. Per ora si vedono solo i sottotitoli. */
+/* Voci generate con ElevenLabs (Annunciatore e Re Glitch): file nella cartella voci/ */
+const IDV=["locandina","risposta","si","no","come1","come2","come3","come4","crea","pronto","scelte","registrato","liv1","liv2","liv3","liv4","liv5","liv6","liv7","liv8","vinto","aiuto","perso","re1","castello"];
+const VOCI={};IDV.forEach(k=>VOCI[k]="voci/fl9_"+k+".mp3");
+const voce=new Audio();voce.preload="auto";let sotTimer=null,dopo=null;
+voce.addEventListener("play",()=>abbassa(true));voce.addEventListener("pause",()=>abbassa(false));
+voce.addEventListener("ended",()=>{abbassa(false);if(dopo){const d=dopo;dopo=null;const extra=(typeof dopoCome!=="undefined"&&dopoCome&&d[0]==="come1")?dopoCome:null;if(extra)dopoCome=null;parla(d[0],d[1],extra)}});
+function sblocca(){try{voce.src=VOCI.locandina;voce.muted=true;const p=voce.play();if(p)p.then(()=>{voce.pause();voce.muted=false;voce.currentTime=0}).catch(()=>{voce.muted=false})}catch(e){}}
+function parla(id,testo,poi){const s=$("sottotitolo");s.textContent=testo;s.classList.add("on");clearTimeout(sotTimer);
+  sotTimer=setTimeout(()=>s.classList.remove("on"),Math.max(2800,testo.length*75));dopo=poi||null;
+  if(audioOn&&VOCI[id]){try{voce.pause();voce.muted=false;voce.src=VOCI[id];voce.currentTime=0;voce.play().catch(()=>{})}catch(e){}}}
+
+/* ---------- Pixel art ---------- */
+const PELLI=["#f6d1b1","#e3ad80","#b97a4f","#7a4a2b"];
+const TINTE={Castani:"#6b3d1f",Neri:"#1d1a22",Biondi:"#e8c14a",Rossi:"#c4471b"};
+const COLORI={Nero:"#2b2b34",Giallo:"#ffd23f",Blu:"#2f6bff",Verde:"#2fe36a",Rosso:"#ff3b4e",Grigio:"#9aa3b2"};
+const BASE=["................","................",".....KKKKKK.....","....KSSSSSSK....","....KSSSSSSK....","....KSESSESK....","....KSSSSSSK....","....KSSMMSSK....",".....KSSSSK.....","....KCCCCCCK....","...KCCWCCWCCK...","...KSCCCCCCSK...","....KCCCCCCK....","....KPPKKPPK....","....KPPK.KPPK...","....KKK...KKK..."];
+const BASE2=BASE.slice(0,13).concat(["....KPPKKPPK....","...KPPK..KPPK...","...KKK....KKK..."]);
+const CAPELLI={
+ Corti:{1:".....HHHHHH.....",2:"....HHHHHHHH....",3:"....HH....HH...."},
+ Lunghi:{1:".....HHHHHH.....",2:"....HHHHHHHH....",3:"...HHH....HHH...",4:"...H........H...",5:"...H........H...",6:"...H........H...",7:"...H........H...",8:"...HH......HH..."},
+ Codini:{1:".....HHHHHH.....",2:"....HHHHHHHH....",3:"....HH....HH....",4:"..HH........HH..",5:".HHH........HHH.",6:"..H..........H.."},
+ Coda:{1:".....HHHHHH.....",2:"....HHHHHHHHH...",3:"....HH....HHHH..",4:"............HHH.",5:".............HH.",6:".............H.."},
+ Cappellino:{1:".....QQQQQQ.....",2:"....QQQQQQQQQQ..",3:"....H......H...."}};
+function disegnaAv(cv,p,frame,dx=0,dy=0,g0){const g=g0||cv.getContext("2d");if(!g0)g.clearRect(0,0,16,16);
+  const rows=(frame?BASE2:BASE).map(r=>r.split(""));const hair=CAPELLI[p.capelli]||{};
+  for(const y in hair){hair[y].split("").forEach((ch,x)=>{if(ch!==".")rows[y][x]=ch})}
+  const pal={K:"#0b0f2a",S:PELLI[p.pelle],E:"#10122a",M:"#a8324a",C:COLORI[p.colore],W:"#ffffff",P:"#1a2350",H:TINTE[p.tinta],Q:COLORI[p.colore]};
+  if(p.colore==="Nero")pal.K="#5a6aa8";
+  rows.forEach((r,y)=>r.forEach((ch,x)=>{if(pal[ch]){g.fillStyle=pal[ch];g.fillRect(dx+x,dy+y,1,1)}}))}
+function sprite(p,frame){const c=document.createElement("canvas");c.width=16;c.height=16;disegnaAv(c,p,frame);return c}
+const RE=["................","...Y..Y..Y..Y...","...YYYYYYYYYY...","...YRYYGYYRYY...","..MMMMMMMMMMMM..",".MMMMMMMMMMMMMM.",".MMWWMMMMMMWWMM.",".MMWKMMMMMMWKMM.",".MMMMMMMMMMMMMM.",".MMMKKKKKKKKMMM.",".MMMKWKWKWKKMMM.","..MMMMMMMMMMMM..","..MM.MM..MM.MM..",".MM..MM..MM..MM.","................","................"];
+const PAL_RE={Y:"#ffd23f",R:"#ff3b4e",G:"#39ff6a",M:"#c43bff",W:"#ffffff",K:"#10122a"};
+const CANDELA=["...F...","..FYF..","..FYF..","...W...","..CCC..","..CCC..","..CCC..","..CCC..","..CCC..","..CCC..",".KKKKK."];
+const CASTELLO=["......T.......T......",".....TTT.....TTT.....","....BBBBB...BBBBB....","....BLBLB...BLBLB....","....BBBBB...BBBBB....","....BBNBB...BBNBB....","....BBBBBBBBBBBBB....","....BBBBBBBBBBBBB....","....BBNBBBBBBBNBB....","....BBBBBBDDBBBBB....","....BBBBBBDDBBBBB....","....BBBBBBDDBBBBB...."];
+function mappa(g,map,pal,dx,dy,glitch){map.forEach((r,y)=>r.split("").forEach((ch,x)=>{let col=pal[ch];if(!col)return;
+  if(glitch&&ch==="M"&&Math.random()<.12)col=["#39ff6a","#3fd2ff","#ffffff"][Math.random()*3|0];g.fillStyle=col;g.fillRect(dx+x,dy+y,1,1)}))}
+function candelaCv(acceso){const c=document.createElement("canvas");c.width=7;c.height=11;
+  mappa(c.getContext("2d"),CANDELA,acceso?{F:"#ff6a2b",Y:"#ffd23f",W:"#ffffff",C:"#3fd2ff",K:"#0b0f2a"}:{W:"#555b7a",C:"#2a3160",K:"#0b0f2a"},0,0);return c}
+const FILIPPO={colore:"Blu",capelli:"Corti",tinta:"Castani",pelle:0};
+
+/* Locandina */
+function disegnaPoster(t){const c=$("posterCv"),g=c.getContext("2d");const W=160,H=112;
+  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,"#06103a");gr.addColorStop(1,"#1546d1");g.fillStyle=gr;g.fillRect(0,0,W,H);
+  let s=7;const r=()=>{s=(s*9301+49297)%233280;return s/233280};g.fillStyle="#fff";for(let i=0;i<50;i++){g.globalAlpha=.3+r()*.7;g.fillRect(r()*W|0,r()*60|0,1,1)}g.globalAlpha=1;
+  /* castello grande al centro */
+  const CB={T:"#ff3bd4",B:"#3a0b44",L:"#5c1670",N:Math.floor(t/500)%2?"#39ff6a":"#3fd2ff",D:"#000"};
+  g.save();g.translate(38,18);g.scale(4,4);mappa(g,CASTELLO,CB,0,0);g.restore();
+  /* Re Glitch sulla torre */
+  mappa(g,RE,PAL_RE,72,2,true);
+  /* suolo */
+  g.fillStyle="#04210e";g.fillRect(0,88,W,24);g.fillStyle="#39ff6a";g.fillRect(0,88,W,1);
+  for(let x=0;x<W;x+=12)g.fillRect(x+(t/60|0)%12,93,6,1);
+  /* Filippo */
+  g.save();g.translate(14,56);g.scale(2,2);disegnaAv(null,FILIPPO,Math.floor(t/350)%2,0,0,g);g.restore();
+  /* 9 candeline */
+  const cs=candelaCv(true);for(let i=0;i<9;i++){g.drawImage(cs,52+i*11,96+(i%2),7,11)}
+  /* glitch volanti */
+  g.fillStyle=Math.floor(t/120)%2?"#ff3bd4":"#39ff6a";g.fillRect(130,40+Math.sin(t/300)*6,6,6);g.fillRect(24,30+Math.cos(t/350)*5,4,4)}
+let posterRaf=null;function animaPoster(){cancelAnimationFrame(posterRaf);const f=t=>{disegnaPoster(t);if($("locandina").classList.contains("on"))posterRaf=requestAnimationFrame(f)};posterRaf=requestAnimationFrame(f)}
+
+/* ---------- Stato e navigazione ---------- */
+let anim=null;
+function vai(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));scrollTo(0,0);clearInterval(anim);
+  if(id==="gioco")musicaOff();else if(id!=="boot")suona("menu");
+  if(id==="locandina"){animaPoster();parla("locandina","Attenzione, giocatore! Filippo compie nove anni… e Re Glitch gli ha rubato le candeline!")}
+  if(id==="risposta")parla("risposta","Allora, giocatore… ci sarai alla festa?");
+  if(id==="tabellone")mostraTab();
+  if(id==="scelte")prepScelte();}
+function dopoBoot(){const r=store.get("risposta",null);
+  if(!r){vai("locandina");return}
+  if(!store.get("giocatore",null)){apriCrea();return}
+  if(r==="si"&&!store.get("scelte",null)){mancaAvviso=true;vai("scelte");return}
+  vai("tabellone")}
+
+/* ---------- Boot ---------- */
+function avvia(conAudio){audioOn=conAudio;store.set("audio",conAudio);if(conAudio){initAudio();sfx("start");sblocca()}
+  let p=0;const t=setInterval(()=>{p+=7;$("carica").style.width=Math.min(p,100)+"%";if(p>=100){clearInterval(t);setTimeout(dopoBoot,200)}},40);
+  $("start").disabled=true;$("muto").disabled=true}
+$("start").onclick=()=>avvia(true);$("muto").onclick=()=>avvia(false);
+
+/* ---------- Locandina e risposta ---------- */
+$("aRisposta").onclick=()=>{sfx("click");vai("risposta")};
+let daMenu=false;
+function rispondi(v){store.set("risposta",v);sfx(v==="si"?"start":"click");
+  const voceRisp=()=>v==="si"?parla("si","Grandioso! Sei dei nostri!"):parla("no","Peccato! Ma puoi giocare lo stesso, insieme ai tuoi compagni!");
+  if(daMenu&&store.get("giocatore",null)){daMenu=false;if(v==="si"&&!store.get("scelte",null)){vai("scelte")}else{voceRisp();
+    dialogo(v==="si"?"CI SEI!":"RISPOSTA CAMBIATA",v==="si"?"Ottimo! Ti aspettiamo alla festa.":"Ci mancherai! Puoi continuare a giocare ai livelli.");vai("tabellone")}return}
+  come(0,true)}
+$("rSi").onclick=()=>rispondi("si");$("rNo").onclick=()=>rispondi("no");
+
+/* ---------- Come funziona ---------- */
+const COME=[
+ {id:"come1",t:"Re Glitch, il boss dei pixel impazziti, ha rubato le 9 candeline di Filippo e le ha nascoste in 8 livelli.",chi:"re"},
+ {id:"come2",t:"Ogni livello si apre in un giorno diverso, fino al 14 novembre. Supera un livello e recuperi una candelina!",chi:"candela"},
+ {id:"come3",t:"Il nono livello è il castello di Re Glitch: lo affronteremo tutti insieme, alla festa.",chi:"castello"},
+ {id:"come4",t:"Adesso crea il tuo giocatore: scegli il nickname e come vuoi essere. Alla festa ti aspetta una sorpresa!",chi:"filippo"}];
+const COME_NO="Anche se non puoi venire alla festa, puoi giocare ai livelli insieme ai tuoi compagni. Adesso crea il tuo giocatore!";
+let iCome=0,daMenuCome=false,dopoCome=null;
+function come(i,primaVolta){iCome=i;vai("come");const f=COME[i];const testo=(i===3&&store.get("risposta")==="no")?COME_NO:f.t;$("comeTxt").textContent=testo;
+  const seguito=i===0?["re1","Le candeline di Filippo? Adesso sono mie! Ah ah ah!"]:null;
+  if(primaVolta){const si=store.get("risposta")==="si";parla(si?"si":"no",si?"Grandioso! Sei dei nostri!":"Peccato! Ma puoi giocare lo stesso, insieme ai tuoi compagni!",[f.id,testo]);dopoCome=seguito}
+  else parla(f.id,testo,seguito);
+  const cv=$("comeCv"),g=cv.getContext("2d");clearInterval(anim);
+  const draw=()=>{g.clearRect(0,0,cv.width,cv.height);
+    if(f.chi==="re"){cv.width=16;cv.height=16;mappa(g,RE,PAL_RE,0,0,true)}
+    if(f.chi==="candela"){cv.width=16;cv.height=16;g.drawImage(candelaCv(Math.random()<.85),4,2,7,11)}
+    if(f.chi==="castello"){cv.width=21;cv.height=21;mappa(g,CASTELLO,{T:"#ff3bd4",B:"#3a0b44",L:"#5c1670",N:Math.random()<.5?"#39ff6a":"#3fd2ff",D:"#000"},0,6)}
+    if(f.chi==="filippo"){cv.width=16;cv.height=16;disegnaAv(cv,FILIPPO,Math.floor(Date.now()/300)%2)}};
+  draw();anim=setInterval(draw,150);
+  $("comePunti").innerHTML=COME.map((_,k)=>"<i class='"+(k===i?"on":"")+"'></i>").join("");
+  $("comeAvanti").textContent=i<3?"AVANTI ▶":(daMenuCome?"TORNA AL TABELLONE ▶":"CREA IL GIOCATORE ▶");sfx(f.chi==="re"?"colpo":"click")}
+$("comeAvanti").onclick=()=>{if(iCome<3)come(iCome+1);else if(daMenuCome){daMenuCome=false;vai("tabellone")}else apriCrea()};
+
+/* ---------- Personaggio ---------- */
+const PA=["Turbo","Mega","Super","Pixel","Ninja","Laser","Neon","Cyber"];
+const PB=["Fulmine","Cometa","Stella","Razzo","Drago","Fenice","Pantera","Tigre","Volpe","Lampo","Meteora","Gemma","Saetta","Falco","Unicorno","Vulcano"];
+const PRESI=["Turbo Drago","Neon Cometa","Pixel Fenice","Mega Razzo","Ninja Volpe","Super Stella"]; /* esempio: nel sistema vero arrivano dal Foglio */
+let G=store.get("giocatore",null)||{a:Math.random()*8|0,b:Math.random()*16|0,colore:"Verde",capelli:"Corti",tinta:"Castani",pelle:0};
+const nickDi=o=>PA[o.a]+" "+PB[o.b];
+const preso=o=>{const mio=store.get("giocatore",null);return PRESI.includes(nickDi(o))&&!(mio&&nickDi(mio)===nickDi(o))};
+function chips(id,valori,chiave,render){const box=$(id);box.innerHTML="";valori.forEach((v,i)=>{const b=document.createElement("button");b.className="chip";b.type="button";
+  const val=chiave==="pelle"?i:v;render(b,v,i);b.setAttribute("aria-pressed",G[chiave]===val);b.onclick=()=>{G[chiave]=val;sfx("click");aggCrea();chips(id,valori,chiave,render)};box.appendChild(b)})}
+function apriCrea(){vai("crea");parla("crea","Scegli un nickname e il tuo aspetto. Fatti riconoscere!");
+  chips("chColore",Object.keys(COLORI),"colore",(b,v)=>{b.classList.add("colore");b.style.background=COLORI[v];b.setAttribute("aria-label",v);b.title=v});
+  chips("chCapelli",Object.keys(CAPELLI),"capelli",(b,v)=>{b.textContent=v});
+  chips("chTinta",Object.keys(TINTE),"tinta",(b,v)=>{b.classList.add("colore");b.style.background=TINTE[v];b.setAttribute("aria-label",v);b.title=v});
+  chips("chPelle",PELLI,"pelle",(b,v,i)=>{b.classList.add("colore");b.style.background=v;b.setAttribute("aria-label","Carnagione "+(i+1))});
+  aggCrea();let fr=0;anim=setInterval(()=>disegnaAv($("avCv"),G,(fr++)%2),350)}
+function aggCrea(){$("pa").textContent=PA[G.a].toUpperCase();$("pb").textContent=PB[G.b].toUpperCase();$("nickTxt").textContent=nickDi(G);
+  const p=preso(G);$("nickStato").textContent=p?"🔒 Già preso da un altro giocatore: cambia una parola":"✔ Libero, è tuo!";
+  $("nickStato").className="stato "+(p?"preso":"libero");$("salvaG").disabled=p;disegnaAv($("avCv"),G,0)}
+document.querySelectorAll(".freccia").forEach(b=>b.onclick=()=>{const k=b.dataset.p,len=k==="a"?8:16;G[k]=(G[k]+(+b.dataset.d)+len)%len;sfx("click");aggCrea()});
+$("dado").onclick=()=>{let t=0;do{G.a=Math.random()*8|0;G.b=Math.random()*16|0;t++}while(preso(G)&&t<50);sfx("moneta");aggCrea()};
+$("salvaG").onclick=()=>{if(preso(G))return;const nuovo=!store.get("giocatore",null);store.set("giocatore",G);sfx("start");
+  parla("pronto","Grande! Ora sei nella squadra di Filippo!");
+  if(store.get("risposta")==="si"&&!store.get("scelte",null))vai("scelte");else vai("tabellone")};
+
+/* ---------- Scelte ---------- */
+let mancaAvviso=false;
+function prepScelte(){$("mancano").hidden=!mancaAvviso;mancaAvviso=false;
+  parla("scelte","Ultimo passo: passa il telefono a mamma o papà!");
+  const sv=store.get("scelte",null);if(sv){["nome","menu","bibita","allergie","tel"].forEach(k=>{if(sv[k]!=null)$(k).value=sv[k]});
+    ["cel","gen"].forEach(k=>{if(sv[k]){const r=document.querySelector("input[name="+k+"][value="+sv[k]+"]");if(r)r.checked=true}})}}
+$("form").onsubmit=e=>{e.preventDefault();const v=k=>document.querySelector("input[name="+k+"]:checked")?.value;
+  const d={nome:$("nome").value.trim(),menu:$("menu").value,bibita:$("bibita").value,cel:v("cel"),allergie:$("allergie").value.trim(),gen:v("gen"),tel:$("tel").value.trim()};
+  let err="";if(!d.nome)err="Scrivi nome e cognome.";else if(!d.menu)err="Scegli il baby menù.";else if(!d.bibita)err="Scegli la bibita.";
+  else if(!d.gen)err="Indica se un genitore può restare.";else if(!d.tel)err="Scrivi un numero di telefono.";
+  $("errore").textContent=err;if(err)return;
+  store.set("scelte",d);sfx("registrato");
+  dialogo("GIOCATORE 8 REGISTRATO!",nickDi(G)+" è nella squadra di Filippo. Ci vediamo il 15 novembre al Cinelandia!");
+  parla("registrato","Iscrizione completata! Ci vediamo alla festa!");vai("tabellone")};
+function dialogo(tit,txt){disegnaAv($("dAv"),G,0);$("dTit").textContent=tit;$("dTxt").textContent=txt;$("dialogo").classList.add("on");$("dOk").focus()}
+$("dOk").onclick=()=>$("dialogo").classList.remove("on");
+
+/* ---------- Tabellone ---------- */
+const LIVELLI=[null,
+ {nome:"INGRESSO",apre:"2026-10-29",novita:"Salta i Glitch, prendi le monete e arriva alla candelina!"},
+ {nome:"KIDS VILLAGE",apre:"2026-11-03",novita:"Novità: Glitch giganti! Salta al momento giusto."},
+ {nome:"NINJA",apre:"2026-11-05",novita:"Novità: DOPPIO SALTO! Tocca di nuovo in aria per volare più in alto."},
+ {nome:"SALA GIOCHI",apre:"2026-11-07",novita:"Novità: Glitch volanti che vanno su e giù. Passaci sotto o saltali!"},
+ {nome:"THE CLIMB",apre:"2026-11-09",novita:"Novità: buche nel pavimento! Se ci cadi perdi una vita."},
+ {nome:"BAR DEI POP-CORN",apre:"2026-11-11",novita:"Novità: piattaforme sospese. Salici sopra per le monete in alto!"},
+ {nome:"SALA AL BUIO",apre:"2026-11-12",novita:"Novità: si spengono le luci! Vedi solo intorno a te."},
+ {nome:"CORRIDOIO DEL CASTELLO",apre:"2026-11-14",novita:"La prova finale: c'è tutto, ed è più veloce!"}];
+const FRASI_LIV=[null,"Livello uno: l'ingresso! Salta i Glitch e prendi le monete!","Livello due: Kids Village! Attenzione ai Glitch giganti!","Livello tre: Ninja! Da adesso hai il doppio salto!","Livello quattro: la sala giochi! Arrivano i Glitch volanti!","Livello cinque: The Climb! Occhio alle buche!","Livello sei: il bar dei pop-corn! Sali sulle piattaforme!","Livello sette: la sala al buio… si spengono le luci!","Livello otto: il corridoio del castello! È la prova finale!"];
+const FESTA=new Date("2026-11-15T15:00:00+01:00");
+const prova=()=>store.get("prova",false);
+const aperto=n=>prova()||new Date()>=new Date(LIVELLI[n].apre+"T00:00:00+01:00");
+const dataBreve=s=>{const d=new Date(s+"T12:00:00+01:00");return d.getDate()+" "+["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"][d.getMonth()]};
+let countT=null,tapTit=0;
+function mostraTab(){if(store.get("risposta")==="si"&&!store.get("scelte",null)){mancaAvviso=true;vai("scelte");return}
+  G=store.get("giocatore",G);disegnaAv($("tabAv"),G,0);$("tabNick").textContent=nickDi(G);
+  $("mScelte").hidden=store.get("risposta")!=="si";$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");
+  const fatti=store.get("fatti",{});const cand=$("candele");cand.innerHTML="";
+  for(let i=1;i<=9;i++){const c=candelaCv(!!fatti[i]);c.className="px";c.setAttribute("aria-label","Candelina "+i+(fatti[i]?" recuperata":" da recuperare"));cand.appendChild(c)}
+  const gr=$("griglia");gr.innerHTML="";
+  for(let n=1;n<=8;n++){const b=document.createElement("button");b.className="liv";b.type="button";
+    if(fatti[n]){b.classList.add("fatto");b.innerHTML=n+"<small>"+LIVELLI[n].nome+"<br>Record "+store.get("rec"+n,0)+"</small>";b.onclick=()=>gioca(n)}
+    else if(aperto(n)){b.innerHTML=n+"<small>"+LIVELLI[n].nome+"<br>Gioca!</small>";b.onclick=()=>gioca(n)}
+    else{b.classList.add("chiuso");b.innerHTML="🔒<small>Si apre il "+dataBreve(LIVELLI[n].apre)+"</small>";b.disabled=true}
+    gr.appendChild(b)}
+  const boss=document.createElement("button");boss.type="button";boss.className="liv boss";boss.onclick=()=>parla("castello","Vi aspetto nel mio castello… il quindici novembre! Eh eh eh!");boss.innerHTML="9<small id='cd'></small>";gr.appendChild(boss);
+  const agg=()=>{const ms=FESTA-new Date();const el=document.getElementById("cd");if(!el)return;
+    if(ms<=0){el.textContent="Si gioca alla festa!";return}const gg=Math.floor(ms/864e5),hh=Math.floor(ms/36e5)%24;el.textContent="Castello di Re Glitch · tra "+gg+" g "+hh+" h"};
+  agg();clearInterval(countT);countT=setInterval(agg,30000);
+  $("pronti").textContent=store.get("risposta")==="si"?8:7}
+$("titTab").onclick=()=>{if(++tapTit>=5){tapTit=0;store.set("prova",!prova());sfx("aiuto");mostraTab();
+  dialogo(prova()?"TRUCCO ATTIVO":"TRUCCO SPENTO",prova()?"Tutti i livelli sono aperti per la prova.":"I livelli tornano ad aprirsi alle loro date.")}};
+$("menuBtn").onclick=()=>{const m=$("menuTab");const on=!m.classList.contains("on");m.classList.toggle("on",on);$("menuBtn").setAttribute("aria-expanded",on);sfx("click")};
+$("mLocandina").onclick=()=>{$("menuTab").classList.remove("on");vai("locandina");$("aRisposta").textContent="AVANTI ▶";daMenu=true};
+$("mRisposta").onclick=()=>{$("menuTab").classList.remove("on");daMenu=true;vai("risposta")};
+$("mScelte").onclick=()=>{$("menuTab").classList.remove("on");vai("scelte")};
+$("mGiocatore").onclick=()=>{$("menuTab").classList.remove("on");apriCrea()};
+$("mCome").onclick=()=>{$("menuTab").classList.remove("on");daMenuCome=true;come(0)};
+$("mAudio").onclick=()=>{audioOn=!audioOn;store.set("audio",audioOn);if(audioOn){initAudio();suona("menu")}else{musicaOff();try{voce.pause()}catch(e){}}$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");sfx("click")};
+$("mMusica").onclick=()=>{musicaSi=!musicaSi;store.set("musica",musicaSi);if(musicaSi){initAudio();suona("menu")}else musicaOff();$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");sfx("click")};
+
+/* ---------- Motore di gioco ---------- */
+const cv=$("cv"),ctx=cv.getContext("2d");const W=256,H=224,SUOLO=196;
+let S=null,raf=null,ultimo=0,acc=0;
+function rng(seed){let s=seed*9301+49297;return()=>{s=(s*9301+49297)%233280;return s/233280}}
+function regole(n){return{vel:2.05+(n-1)*.13,passo:Math.max(122,190-n*7),lung:4000+n*300,
+  alti:n>=2,doppio:n>=3,volanti:n>=4,buche:n>=5,piatt:n>=6,buio:n===7}}
+function creaLivello(n,R){const r=rng(n*7+3);const ost=[],vol=[],buche=[],piatt=[],mon=[];let x=320;
+  const tipi=["terra"];if(R.alti)tipi.push("alto");if(R.volanti)tipi.push("volante","volante");if(R.buche)tipi.push("buca","buca");if(R.piatt)tipi.push("piatt","piatt");
+  let ultimoTipo="";
+  while(x<R.lung-220){let tipo=tipi[Math.floor(r()*tipi.length)];if(n>=2&&r()<.35)tipo=tipi[tipi.length-1];if(tipo===ultimoTipo&&tipo!=="terra"&&r()<.5)tipo="terra";ultimoTipo=tipo;
+    if(tipo==="terra"||tipo==="alto"){const h=tipo==="alto"?(R.doppio?36:30):(r()<.5?14:20),w=r()<.6?14:18;ost.push({x,w,h});
+      if(r()<.6){for(let k=0;k<3;k++)mon.push({x:x+w/2-18+k*18,y:SUOLO-h-26-(k===1?10:0)})}else{for(let k=0;k<3;k++)mon.push({x:x+w+40+k*16,y:SUOLO-12})}
+      x+=w}
+    else if(tipo==="volante"){vol.push({x,y0:SUOLO-36,amp:18,ph:r()*6.28,w:14,h:12});mon.push({x:x+7,y:SUOLO-62});x+=14}
+    else if(tipo==="buca"){const w=28+Math.floor(r()*14);buche.push({x,w});for(let k=0;k<3;k++)mon.push({x:x+w/2-14+k*14,y:SUOLO-34-(k===1?8:0)});x+=w}
+    else if(tipo==="piatt"){const w=56,y=SUOLO-46;piatt.push({x,w,y});for(let k=0;k<4;k++)mon.push({x:x+8+k*13,y:y-12});
+      if(r()<.6)ost.push({x:x+w/2-7,w:14,h:20});x+=w}
+    x+=R.passo+r()*110}
+  return{ost,vol,buche,piatt,mon,fine:R.lung}}
+function gioca(n){vai("gioco");const L=LIVELLI[n];$("titLiv").textContent="LIVELLO "+n+" · "+L.nome;
+  const fails=store.get("fail"+n,0),aiuto=fails>=3;const R=regole(n);if(aiuto)R.vel*=.85;
+  S={n,R,lv:creaLivello(n,R),cam:0,py:SUOLO,vy:0,aTerra:true,salti:0,su:null,vite:aiuto?4:3,inv:0,monete:0,stato:"pronto",t:0,aiuto,
+    spr:[sprite(G,0),sprite(G,1)],cand:candelaCv(true)};
+  $("prontoTit").textContent=aiuto?"ARRIVA UN AIUTO!":"LIVELLO "+n;
+  $("prontoTxt").textContent=aiuto?"Hai un cuore in più e i Glitch vanno più piano. Forza!":L.novita;
+  $("aiutoTxt").textContent=R.doppio?"Tocca per saltare, tocca di nuovo in aria per il doppio salto.":"Tocca lo schermo (o premi la barra spaziatrice) per saltare.";
+  if(aiuto)sfx("aiuto");if(aiuto)parla("aiuto","Arriva un aiuto! Un cuore in più!");else parla("liv"+n,FRASI_LIV[n]);
+  $("ovPronto").classList.add("on");$("ovFine").classList.remove("on");disegna()}
+function salta(){if(!S||S.stato!=="gioco")return;
+  if(S.aTerra){S.vy=-6.3;S.aTerra=false;S.su=null;S.salti=1;sfx("salto")}
+  else if(S.R.doppio&&S.salti===1){S.vy=-5.6;S.salti=2;sfx("salto2")}}
+cv.addEventListener("pointerdown",e=>{e.preventDefault();salta()});
+addEventListener("keydown",e=>{if((e.code==="Space"||e.code==="ArrowUp")&&$("gioco").classList.contains("on")){e.preventDefault();if(S&&S.stato==="pronto")parti();else salta()}});
+function parti(){if(!S)return;$("ovPronto").classList.remove("on");S.stato="gioco";sfx("start");musicaOn(S.n);ultimo=performance.now();acc=0;cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
+$("via").onclick=parti;
+function loop(t){acc+=Math.min(100,t-ultimo);ultimo=t;while(acc>=16.67&&S.stato==="gioco"){passo();acc-=16.67}disegna();if(S&&S.stato==="gioco")raf=requestAnimationFrame(loop)}
+function inBuca(x){return S.lv.buche.find(b=>x>b.x+3&&x<b.x+b.w-3)}
+function perdiVita(motivo){const s=S;s.vite--;s.inv=70;sfx(motivo==="buca"?"caduta":"colpo");if(s.vite<=0){fine(false);return true}return false}
+function passo(){const s=S;s.t++;s.cam+=s.R.vel;const px=s.cam+48,cx=px+16;
+  const piedePrima=s.py;s.vy+=.36;s.py+=s.vy;
+  /* piattaforme */
+  if(s.su){const p=s.su;if(cx<p.x||cx>p.x+p.w){s.su=null;s.aTerra=false;if(s.salti===0)s.salti=1}else{s.py=p.y;s.vy=0}}
+  if(!s.su&&s.vy>=0){for(const p of s.lv.piatt){if(cx>p.x&&cx<p.x+p.w&&piedePrima<=p.y&&s.py>=p.y){s.py=p.y;s.vy=0;s.aTerra=true;s.salti=0;s.su=p;break}}}
+  /* suolo e buche */
+  if(!s.su){const b=inBuca(cx);
+    if(!b&&s.py>=SUOLO&&piedePrima<=SUOLO+2){s.py=SUOLO;s.vy=0;s.aTerra=true;s.salti=0}
+    else if(b&&s.py>=SUOLO){s.aTerra=false}
+    if(s.py>SUOLO+30){if(perdiVita("buca"))return;const bb=inBuca(cx)||b;s.cam=bb?bb.x+bb.w-40:s.cam;s.py=SUOLO;s.vy=0;s.aTerra=true;s.salti=0}}
+  if(s.inv>0)s.inv--;
+  const hb={x1:px+9,x2:px+23,y1:s.py-26,y2:s.py};
+  if(s.inv===0){
+    for(const o of s.lv.ost){if(o.colpito)continue;if(hb.x2>o.x+2&&hb.x1<o.x+o.w-2&&hb.y2>SUOLO-o.h+2&&hb.y1<SUOLO){o.colpito=true;if(perdiVita())return;break}}
+    for(const v of s.lv.vol){if(v.colpito)continue;const y=v.y0+Math.sin(s.t*.06+v.ph)*v.amp;if(hb.x2>v.x+2&&hb.x1<v.x+v.w-2&&hb.y2>y+2&&hb.y1<y+v.h-2){v.colpito=true;if(perdiVita())return;break}}}
+  for(const m of s.lv.mon){if(m.preso)continue;if(hb.x2>m.x-4&&hb.x1<m.x+4&&hb.y1<m.y+5&&hb.y2>m.y-5){m.preso=true;s.monete++;sfx("moneta")}}
+  if(px>=s.lv.fine)fine(true)}
+function fine(vinto){const s=S;s.stato="fine";musicaOff();cancelAnimationFrame(raf);
+  if(vinto){const f=store.get("fatti",{});f[s.n]=true;store.set("fatti",f);store.set("fail"+s.n,0);const rec=Math.max(store.get("rec"+s.n,0),s.monete);store.set("rec"+s.n,rec);sfx("vittoria");
+    $("fineTit").textContent="CANDELINA "+s.n+"/9!";
+    $("fineTxt").innerHTML="Hai recuperato la candelina "+s.n+".<br>Monete: <b>"+s.monete+"</b> su "+s.lv.mon.length+" · Record: <b>"+rec+"</b>";
+    parla("vinto","Candelina recuperata! Grande!")}
+  else{const k=store.get("fail"+s.n,0)+1;store.set("fail"+s.n,k);sfx("gameover");$("fineTit").textContent="GAME OVER";
+    $("fineTxt").textContent=k>=3?"Re Glitch ti ha preso! Alla prossima partita arriva un aiuto.":"Re Glitch ti ha preso! Riprova: le candeline ti aspettano.";
+    parla("perso","Ah ah ah! Le candeline sono mie! Riprova, se hai coraggio!")}
+  $("ovFine").classList.add("on")}
+$("rigioca").onclick=()=>gioca(S.n);$("aTab").onclick=()=>vai("tabellone");
+$("esci").onclick=()=>{if(S)S.stato="fine";musicaOff();cancelAnimationFrame(raf);vai("tabellone")};
+
+/* ---------- Sfondi dei livelli: i posti del Cinelandia ---------- */
+const TEMI=[null,
+ {cielo:["#06103a","#1546d1"],suolo:"#39ff6a",terra:"#04210e"},
+ {cielo:["#2a0f5a","#ff6ab0"],suolo:"#ffd23f",terra:"#3a1a00"},
+ {cielo:["#0b2a1a","#1f7a4a"],suolo:"#ffd23f",terra:"#2a1a08"},
+ {cielo:["#12002a","#3a0b6e"],suolo:"#3fd2ff",terra:"#05051a"},
+ {cielo:["#0a1b5c","#2f8bff"],suolo:"#ff6a2b",terra:"#2a1206"},
+ {cielo:["#3a0a0a","#c4471b"],suolo:"#ffffff",terra:"#3a0a0a"},
+ {cielo:["#000000","#1a0614"],suolo:"#ff3b4e",terra:"#120006"},
+ {cielo:["#12001c","#5c1670"],suolo:"#ff3bd4",terra:"#0a0010"}];
+const fondi={};
+function fondo(n){if(fondi[n])return fondi[n];const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");const T=TEMI[n];
+  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,T.cielo[0]);gr.addColorStop(1,T.cielo[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+  const r=rng(n+11);g.fillStyle="#fff";for(let i=0;i<40;i++){g.globalAlpha=.2+r()*.5;g.fillRect(r()*W|0,r()*110|0,1,1)}g.globalAlpha=1;return fondi[n]=c}
+function scena(n,cam){const o=(v,p)=>-((cam*p)%v);
+  if(n===1){ctx.fillStyle="#0a1b5c";const a=o(64,.5);for(let x=a-64;x<W+64;x+=64){ctx.fillRect(x+6|0,SUOLO-46,22,46);ctx.fillRect(x+36|0,SUOLO-30,18,30)}
+    ctx.fillStyle="#3fd2ff";for(let x=a-64;x<W+64;x+=64)ctx.fillRect(x+10|0,SUOLO-40,14,9)}
+  if(n===2){const a=o(96,.4);const col=["#ff3b4e","#ffd23f","#2f8bff","#2fe36a"];for(let x=a-96,i=0;x<W+96;x+=96,i++){ctx.fillStyle=col[(i+Math.floor(cam*.4/96))&3];
+      ctx.beginPath();ctx.arc(x+30|0,SUOLO,30,Math.PI,0);ctx.fill();ctx.fillStyle="#fff";ctx.fillRect(x+12|0,SUOLO-18,4,4);ctx.fillRect(x+44|0,SUOLO-18,4,4);
+      ctx.fillStyle="#ffd23f";ctx.fillRect(x+64|0,SUOLO-60,6,60);ctx.fillStyle="#ff3b4e";for(let k=0;k<6;k++)ctx.fillRect(x+70+k*4|0,SUOLO-58+k*10,6,4)}}
+  if(n===3){const a=o(80,.5);ctx.fillStyle="#6b3d1f";for(let x=a-80;x<W+80;x+=80){ctx.fillRect(x+10|0,SUOLO-90,6,90);ctx.fillRect(x+60|0,SUOLO-90,6,90);ctx.fillRect(x+10|0,SUOLO-70,56,4);
+      ctx.fillStyle="#ffd23f";for(let k=0;k<5;k++)ctx.fillRect(x+20+k*9|0,SUOLO-62+(k%2)*4,1,22);ctx.fillStyle="#6b3d1f"}}
+  if(n===4){const a=o(48,.5);for(let x=a-48;x<W+48;x+=48){ctx.fillStyle="#1b1b3a";ctx.fillRect(x+6|0,SUOLO-64,30,64);ctx.fillStyle=["#39ff6a","#ff3bd4","#3fd2ff"][(Math.abs(Math.floor((x-a)/48)))%3];
+      ctx.fillRect(x+10|0,SUOLO-58,22,16);ctx.fillStyle="#ff3b4e";ctx.fillRect(x+14|0,SUOLO-34,4,4);ctx.fillStyle="#ffd23f";ctx.fillRect(x+24|0,SUOLO-34,4,4)}}
+  if(n===5){ctx.fillStyle="#123a9a";ctx.fillRect(0,20,W,SUOLO-20);const a=o(40,.6);const col=["#ff3b4e","#ffd23f","#2fe36a","#ff6a2b","#3fd2ff"];
+    for(let x=a-40,i=0;x<W+40;x+=40,i++)for(let y=30;y<SUOLO-10;y+=26){ctx.fillStyle=col[(i*3+y)%5];ctx.fillRect(x+((y*7)%30)|0,y,6,5)}
+    ctx.fillStyle="#fff";const b=o(120,.6);for(let x=b-120;x<W+120;x+=120)ctx.fillRect(x+60|0,20,1,SUOLO-20)}
+  if(n===6){const a=o(72,.5);for(let x=a-72;x<W+72;x+=72){for(let k=0;k<5;k++){ctx.fillStyle=k%2?"#fff":"#ff3b4e";ctx.fillRect(x+12+k*6|0,SUOLO-50,6,50)}
+      ctx.fillStyle="#ffd23f";for(let k=0;k<6;k++)ctx.fillRect(x+12+k*5|0,SUOLO-56-(k%2)*3,5,6)}
+    ctx.fillStyle="#2a0606";ctx.fillRect(0,SUOLO-14,W,14)}
+  if(n===7){ctx.fillStyle="#e9f1ff";ctx.globalAlpha=.25;ctx.fillRect(20,24,W-40,70);ctx.globalAlpha=1;const a=o(24,.7);
+    for(let x=a-24;x<W+24;x+=24){ctx.fillStyle="#7a0e1e";ctx.fillRect(x+2|0,SUOLO-24,18,24);ctx.fillStyle="#a8324a";ctx.fillRect(x+2|0,SUOLO-24,18,6)}}
+  if(n===8){const a=o(32,.5);for(let y=10;y<SUOLO;y+=12)for(let x=a-32+((y/12)%2)*16;x<W+32;x+=32){ctx.fillStyle="#3a0b44";ctx.fillRect(x|0,y,30,10)}
+    const b=o(128,.5);for(let x=b-128;x<W+128;x+=128){ctx.fillStyle="#ff6a2b";ctx.fillRect(x+60|0,60,4,10);ctx.fillStyle="#ffd23f";ctx.fillRect(x+60|0,56,4,4)}}}
+const buioCv=document.createElement("canvas");buioCv.width=W;buioCv.height=H;
+function disegna(){if(!S)return;const s=S,T=TEMI[s.n];ctx.imageSmoothingEnabled=false;ctx.drawImage(fondo(s.n),0,0);scena(s.n,s.cam);
+  /* suolo con buche */
+  ctx.fillStyle=T.terra;ctx.fillRect(0,SUOLO,W,H-SUOLO);ctx.fillStyle=T.suolo;ctx.fillRect(0,SUOLO,W,2);
+  const o3=-(s.cam)%16;for(let x=o3;x<W;x+=16)ctx.fillRect(Math.round(x),SUOLO+6,8,2);
+  for(const b of s.lv.buche){const x=b.x-s.cam;if(x<-60||x>W+10)continue;ctx.fillStyle="#000";ctx.fillRect(Math.round(x),SUOLO,b.w,H-SUOLO);
+    ctx.fillStyle=T.suolo;ctx.fillRect(Math.round(x)-2,SUOLO,2,10);ctx.fillRect(Math.round(x)+b.w,SUOLO,2,10)}
+  /* piattaforme */
+  for(const p of s.lv.piatt){const x=p.x-s.cam;if(x<-70||x>W+10)continue;ctx.fillStyle="#000";ctx.fillRect(Math.round(x),p.y,p.w,7);
+    ctx.fillStyle=T.suolo;ctx.fillRect(Math.round(x)+1,p.y+1,p.w-2,2);ctx.fillStyle="#2f8bff";for(let k=4;k<p.w;k+=10)ctx.fillRect(Math.round(x)+k,p.y+4,5,2)}
+  /* traguardo */
+  const fx=s.lv.fine-s.cam+20;if(fx<W+20){ctx.drawImage(s.cand,Math.round(fx),SUOLO-33,21,33);ctx.fillStyle="rgba(255,210,63,.25)";ctx.fillRect(Math.round(fx)-6,SUOLO-44,33,44)}
+  /* monete */
+  for(const m of s.lv.mon){if(m.preso)continue;const x=m.x-s.cam;if(x<-10||x>W+10)continue;const w=(Math.floor(s.t/8)%4===2)?2:6;
+    ctx.fillStyle="#ff6a2b";ctx.fillRect(Math.round(x-w/2)-1,Math.round(m.y-5),w+2,10);ctx.fillStyle="#ffd23f";ctx.fillRect(Math.round(x-w/2),Math.round(m.y-4),w,8)}
+  /* glitch a terra */
+  const glitch=(x,y,w,h,col,seme)=>{for(let yy=0;yy<h;yy+=2)for(let xx=0;xx<w;xx+=2){const r=(Math.sin((xx*13+yy*7+s.t*3+seme))+1)/2;
+      ctx.fillStyle=col?"#444a6a":(r>.8?"#ffffff":r>.55?"#39ff6a":r>.3?"#c43bff":"#ff3bd4");ctx.fillRect(Math.round(x)+xx,Math.round(y)+yy,2,2)}};
+  for(const o of s.lv.ost){const x=o.x-s.cam;if(x<-30||x>W+10)continue;const y=SUOLO-o.h;glitch(x,y,o.w,o.h,o.colpito,o.x);
+    if(!o.colpito&&s.t%20<10){ctx.fillStyle="#3fd2ff";ctx.fillRect(Math.round(x)-3,y+(s.t%o.h),o.w+6,1)}}
+  for(const v of s.lv.vol){const x=v.x-s.cam;if(x<-30||x>W+10)continue;const y=v.y0+Math.sin(s.t*.06+v.ph)*v.amp;glitch(x,y,v.w,v.h,v.colpito,v.x);
+    if(!v.colpito){ctx.fillStyle="#ff3bd4";const ali=Math.floor(s.t/6)%2?2:-2;ctx.fillRect(Math.round(x)-4,Math.round(y)+4+ali,4,2);ctx.fillRect(Math.round(x)+v.w,Math.round(y)+4+ali,4,2)}}
+  /* giocatore */
+  if(!(s.inv>0&&Math.floor(s.t/4)%2)){const fr=s.aTerra&&s.stato==="gioco"?Math.floor(s.t/7)%2:0;ctx.drawImage(s.spr[fr],48,Math.round(s.py-32),32,32)}
+  /* buio */
+  if(s.R.buio){const b=buioCv.getContext("2d");b.globalCompositeOperation="source-over";b.clearRect(0,0,W,H);b.fillStyle="rgba(0,0,0,.94)";b.fillRect(0,0,W,H);
+    b.globalCompositeOperation="destination-out";const gx=64,gy=s.py-16;const rg=b.createRadialGradient(gx,gy,10,gx,gy,70);rg.addColorStop(0,"rgba(0,0,0,1)");rg.addColorStop(1,"rgba(0,0,0,0)");
+    b.fillStyle=rg;b.fillRect(0,0,W,H);ctx.drawImage(buioCv,0,0)}
+  /* HUD */
+  ctx.fillStyle="rgba(0,0,0,.55)";ctx.fillRect(0,0,W,18);
+  const maxV=s.aiuto?4:3;for(let i=0;i<maxV;i++){ctx.fillStyle=i<s.vite?"#ff3b4e":"#3a3f5c";const x=6+i*12;ctx.fillRect(x,6,3,3);ctx.fillRect(x+5,6,3,3);ctx.fillRect(x,8,8,3);ctx.fillRect(x+1,11,6,2);ctx.fillRect(x+3,13,2,1)}
+  ctx.fillStyle="#ffd23f";ctx.fillRect(58,6,6,7);ctx.font="8px 'Press Start 2P', monospace";ctx.textBaseline="top";ctx.fillText("x"+s.monete,67,6);
+  const p=Math.min(1,(s.cam+48)/s.lv.fine);ctx.fillStyle="#1b2350";ctx.fillRect(110,7,120,5);ctx.fillStyle="#39ff6a";ctx.fillRect(110,7,120*p|0,5);ctx.drawImage(s.cand,234,3,8,13)}
+})();
+</script>
+</body>
+</html>
