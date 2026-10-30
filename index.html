@@ -364,7 +364,7 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
     <div class="candele" id="candele"></div>
     <div class="griglia" id="griglia"></div>
     <div class="pannello">
-      <p class="cont">GIOCATORI PRONTI<br><b id="pronti">–</b> SU <span id="totale">18</span></p>
+      <p class="cont"><b id="pronti">–</b><br><span id="prontiTxt">GIOCATORI PRONTI</span></p>
       <p class="nota" style="text-align:center" id="notaPronti">Nel prototipo il numero è un esempio.</p>
     </div>
     <div class="pannello" id="classPanel" hidden>
@@ -730,7 +730,7 @@ function mostraTab(){if(store.get("risposta")!=="si"){vai("ciao");return}
 function aggCom(){const c=STATO&&STATO.comunicazioni;const box=$("comBox");if(!c||(!c.film&&!(c.avvisi||[]).length)){$("comPanel").hidden=true;return}
   box.innerHTML="";if(c.film){const p=document.createElement("p");p.className="film";p.textContent="🎬 IL FILM DELLA FESTA: "+c.film.toUpperCase();box.appendChild(p)}
   (c.avvisi||[]).forEach(a=>{const p=document.createElement("p");p.textContent="• "+a;box.appendChild(p)});$("comPanel").hidden=false}
-function aggContatore(){aggCom();if(API&&STATO){$("pronti").textContent=STATO.pronti;$("totale").textContent=STATO.totale;$("notaPronti").textContent="Si aggiorna ogni volta che qualcuno conferma.";
+function aggContatore(){aggCom();if(API&&STATO){$("pronti").textContent=STATO.pronti;$("prontiTxt").textContent=STATO.pronti===1?"GIOCATORE PRONTO":"GIOCATORI PRONTI";$("notaPronti").textContent="Si aggiorna ogni volta che qualcuno conferma.";
     const l=(STATO.classifica||[]).filter(x=>x.candeline>0).slice(0,5);$("classPanel").hidden=!l.length;
     $("classifica").innerHTML="";l.forEach(x=>{const li=document.createElement("li");li.textContent=x.nick+" · "+x.candeline+" candeline · "+x.monete+" monete";$("classifica").appendChild(li)})}
   else if(!API){$("pronti").textContent=store.get("risposta")==="si"?8:7}}
