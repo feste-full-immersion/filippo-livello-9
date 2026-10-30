@@ -254,7 +254,7 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
       <button class="btn b-blu" id="dado">🎲 RIMESCOLA</button>
     </div>
     <div class="pannello">
-      <div class="etic">COLORE DEL CONTROLLER</div><div class="chips" id="chColore"></div>
+      <div class="etic">COLORE DELLA MAGLIETTA</div><div class="chips" id="chColore"></div>
       <div class="etic">CAPELLI</div><div class="chips" id="chCapelli"></div>
       <div class="etic">COLORE DEI CAPELLI</div><div class="chips" id="chTinta"></div>
       <div class="etic">CARNAGIONE</div><div class="chips" id="chPelle"></div>
@@ -530,7 +530,9 @@ function parla(id,testo,poi){const s=$("sottotitolo");s.textContent=testo;s.clas
 /* ---------- Pixel art ---------- */
 const PELLI=["#f6d1b1","#e3ad80","#b97a4f","#7a4a2b"];
 const TINTE={Castani:"#6b3d1f",Neri:"#1d1a22",Biondi:"#e8c14a",Rossi:"#c4471b"};
-const COLORI={Nero:"#2b2b34",Giallo:"#ffd23f",Blu:"#2f6bff",Verde:"#2fe36a",Rosso:"#ff3b4e",Grigio:"#9aa3b2"};
+const COLORI={Blu:"#2f6bff",Arancione:"#ff8a1f",Giallo:"#ffd23f",Verde:"#2fe36a",Rosa:"#ff5fc8"};
+/* Se un personaggio ha un colore che non c'è più, si usa il verde */
+const colDi=c=>COLORI[c]||COLORI.Verde;
 const BASE=["................","................",".....KKKKKK.....","....KSSSSSSK....","....KSSSSSSK....","....KSESSESK....","....KSSSSSSK....","....KSSMMSSK....",".....KSSSSK.....","....KCCCCCCK....","...KCCWCCWCCK...","...KSCCCCCCSK...","....KCCCCCCK....","....KPPKKPPK....","....KPPK.KPPK...","....KKK...KKK..."];
 const BASE2=BASE.slice(0,13).concat(["....KPPKKPPK....","...KPPK..KPPK...","...KKK....KKK..."]);
 const CAPELLI={
@@ -542,7 +544,7 @@ const CAPELLI={
 function disegnaAv(cv,p,frame,dx=0,dy=0,g0){const g=g0||cv.getContext("2d");if(!g0)g.clearRect(0,0,16,16);
   const rows=(frame?BASE2:BASE).map(r=>r.split(""));const hair=CAPELLI[p.capelli]||{};
   for(const y in hair){hair[y].split("").forEach((ch,x)=>{if(ch!==".")rows[y][x]=ch})}
-  const pal={K:"#0b0f2a",S:PELLI[p.pelle],E:"#10122a",M:"#a8324a",C:COLORI[p.colore],W:"#ffffff",P:"#1a2350",H:TINTE[p.tinta],Q:COLORI[p.colore]};
+  const pal={K:"#0b0f2a",S:PELLI[p.pelle],E:"#10122a",M:"#a8324a",C:colDi(p.colore),W:"#ffffff",P:"#1a2350",H:TINTE[p.tinta],Q:colDi(p.colore)};
   if(p.colore==="Nero")pal.K="#5a6aa8";
   rows.forEach((r,y)=>r.forEach((ch,x)=>{if(pal[ch]){g.fillStyle=pal[ch];g.fillRect(dx+x,dy+y,1,1)}}))}
 function sprite(p,frame){const c=document.createElement("canvas");c.width=16;c.height=16;disegnaAv(c,p,frame);return c}
