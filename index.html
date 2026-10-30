@@ -130,8 +130,9 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
 .overlay.on{display:flex}
 .overlay h2{font-size:12px}
 .overlay p{font-size:15px}
-#dialogo{position:fixed;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:rgba(4,8,30,.9);padding:24px}
-#dialogo.on{display:flex}
+#dialogo,.modale{position:fixed;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:rgba(4,8,30,.9);padding:24px}
+#dialogo.on,.modale.on{display:flex}
+.modale .pannello{max-width:420px;width:100%;text-align:center}
 #dialogo .pannello{max-width:420px;text-align:center;align-items:center}
 #sottotitolo{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;max-width:440px;width:calc(100% - 32px);background:#000;border:3px solid var(--neon);color:var(--carta);font-size:15px;padding:10px 12px;border-radius:3px;display:none;text-align:center}
 #sottotitolo.on{display:block}
@@ -140,7 +141,7 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
 <body>
 <canvas id="hex" aria-hidden="true"></canvas>
 <main class="app">
-  <div class="proto">PROTOTIPO · I DATI NON VENGONO INVIATI</div>
+  <div class="proto" id="proto">PROTOTIPO · I DATI NON VENGONO INVIATI</div>
 
   <!-- 0 BOOT -->
   <section class="screen on" id="boot" aria-label="Accensione">
@@ -170,6 +171,14 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
       </dl>
     </div>
     <button class="btn b-giallo" id="aRisposta">AVANTI ▶</button>
+    <button class="chip" id="hoCodice" style="align-self:center">Hai già un codice giocatore? Tocca qui</button>
+    <div class="pannello" id="recPanel" hidden>
+      <label for="recCod">Scrivi il tuo codice giocatore (4 caratteri)
+        <input type="text" id="recCod" maxlength="4" autocomplete="off" style="text-transform:uppercase;font-family:var(--pixel);font-size:18px;letter-spacing:.3em">
+      </label>
+      <p class="errore" id="recErr" role="alert"></p>
+      <button class="btn b-verde" id="recVai">RECUPERA IL GIOCATORE</button>
+    </div>
   </section>
 
   <!-- 2 CI SARAI? -->
@@ -295,7 +304,9 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
         <button class="btn b-giallo" id="mLocandina">RIVEDI L'INVITO</button>
         <button class="btn b-blu" id="mRisposta">CAMBIA RISPOSTA</button>
         <button class="btn b-blu" id="mScelte">CAMBIA LE SCELTE</button>
-        <button class="btn b-blu" id="mGiocatore">CAMBIA GIOCATORE</button>
+        <button class="btn b-blu" id="mGiocatore">MODIFICA IL PERSONAGGIO</button>
+        <button class="btn b-blu" id="mCodice">IL MIO CODICE GIOCATORE</button>
+        <button class="btn b-blu" id="mAltro">GIOCA CON UN ALTRO GIOCATORE</button>
         <button class="btn b-blu" id="mCome">COME FUNZIONA</button>
         <button class="btn b-blu" id="mMusica">MUSICA: SÌ</button>
         <button class="btn b-blu" id="mAudio">AUDIO: SÌ</button>
@@ -305,10 +316,13 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
     <div class="candele" id="candele"></div>
     <div class="griglia" id="griglia"></div>
     <div class="pannello">
-      <p class="cont">GIOCATORI PRONTI<br><b id="pronti">7</b> SU 18</p>
-      <p class="nota" style="text-align:center">Nel prototipo il numero è un esempio: con il Foglio collegato si aggiorna da solo.</p>
+      <p class="cont">GIOCATORI PRONTI<br><b id="pronti">–</b> SU <span id="totale">18</span></p>
+      <p class="nota" style="text-align:center" id="notaPronti">Nel prototipo il numero è un esempio.</p>
     </div>
-    <p class="nota" style="text-align:center" id="trucco">Versione di prova: tocca 5 volte «LE 9 CANDELINE» per aprire tutti i livelli.</p>
+    <div class="pannello" id="classPanel" hidden>
+      <h3>CLASSIFICA DEI GIOCATORI</h3>
+      <ol id="classifica" style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;font-size:15px"></ol>
+    </div>
   </section>
 
   <!-- GIOCO -->
@@ -345,13 +359,59 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
   </div>
 </div>
 <div id="sottotitolo" aria-live="polite"></div>
+<div id="antDlg" class="modale" role="dialog" aria-modal="true" aria-labelledby="antTit">
+  <div class="pannello">
+    <h2 id="antTit"></h2>
+    <canvas class="px" id="antCv" width="256" height="224" style="width:100%;height:auto;border:3px solid #000"></canvas>
+    <p id="antTxt"></p>
+    <p class="cont" id="antCd"></p>
+    <button class="btn b-giallo" id="antOk">OK</button>
+  </div>
+</div>
+<div id="selDlg" class="modale" role="dialog" aria-modal="true" aria-labelledby="selTit">
+  <div class="pannello">
+    <h2 id="selTit">CHI GIOCA?</h2>
+    <div id="selLista" style="display:flex;flex-direction:column;gap:10px"></div>
+    <button class="btn b-verde" id="selNuovo">NUOVO GIOCATORE</button>
+    <button class="btn b-blu" id="selChiudi">CHIUDI</button>
+  </div>
+</div>
+<div id="trDlg" class="modale" role="dialog" aria-modal="true" aria-labelledby="trTit">
+  <div class="pannello">
+    <h2 id="trTit">CODICE SEGRETO</h2>
+    <label for="trCod">Codice degli organizzatori<input type="text" id="trCod" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+    <div class="riga"><button class="btn b-verde" id="trOk">OK</button><button class="btn b-blu" id="trNo">ANNULLA</button></div>
+  </div>
+</div>
 
 <script>
 (()=>{
 "use strict";
 const $=id=>document.getElementById(id);
-const store={get(k,d){try{const v=localStorage.getItem("fl9_"+k);return v?JSON.parse(v):d}catch(e){return d}},
-             set(k,v){try{localStorage.setItem("fl9_"+k,JSON.stringify(v))}catch(e){}}};
+/* Ogni giocatore sullo stesso telefono ha i suoi dati (profilo). Audio, musica e trucco valgono per tutti. */
+const GLOBALI=new Set(["audio","musica","prova","attivo","profili"]);
+const ls={get(k,d){try{const v=localStorage.getItem("fl9_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("fl9_"+k,JSON.stringify(v))}catch(e){}}};
+let ATT=ls.get("attivo","p1");
+const store={get(k,d){return ls.get(GLOBALI.has(k)?k:ATT+"_"+k,d)},set(k,v){ls.set(GLOBALI.has(k)?k:ATT+"_"+k,v)}};
+function profili(){return ls.get("profili",[])}
+function salvaProfilo(){const g=store.get("giocatore",null);if(!g)return;const l=profili().filter(x=>x.id!==ATT);l.push({id:ATT,nick:PA[g.a]+" "+PB[g.b],g:g});ls.set("profili",l)}
+function usaProfilo(id){ATT=id;ls.set("attivo",id)}
+function migraProfilo(da,a){try{const pre="fl9_"+da+"_";const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(pre))ks.push(k)}
+  ks.forEach(k=>{localStorage.setItem("fl9_"+a+"_"+k.slice(pre.length),localStorage.getItem(k));localStorage.removeItem(k)})}catch(e){}
+  ls.set("profili",profili().filter(x=>x.id!==da));usaProfilo(a)}
+
+/* ---------- Collegamento al Foglio Google ---------- */
+const API="";
+const CODICE_PROVA="1511";
+let STATO=null;
+async function api(azione,dati){if(!API)return null;
+  try{let r;if(azione==="stato"||azione==="recupera"){r=await fetch(API+"?azione="+azione+(dati&&dati.codice?"&codice="+encodeURIComponent(dati.codice):""))}
+    else{r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({azione:azione},dati||{}))})}
+    const j=await r.json();if(j&&j.stato)STATO=j.stato;if(j&&azione==="stato"&&j.ok)STATO=j;return j}catch(e){return null}}
+/* Le azioni non riuscite (rete assente) restano in coda e ripartono alla prossima apertura */
+function inCoda(a,d){const c=store.get("coda",[]);c.push([a,d]);store.set("coda",c)}
+async function svuotaCoda(){const c=store.get("coda",[]);if(!c.length)return;const resto=[];for(const [a,d] of c){const r=await api(a,d);if(!r)resto.push([a,d])}store.set("coda",resto)}
+async function invia(a,d){const r=await api(a,d);if(!r&&API)inCoda(a,d);return r}
 
 /* ---------- Sfondo a esagoni ---------- */
 function hexBg(){const c=$("hex"),d=window.devicePixelRatio||1;c.width=innerWidth*d;c.height=innerHeight*d;
@@ -463,7 +523,7 @@ function vai(id){document.querySelectorAll(".screen").forEach(s=>s.classList.tog
   if(id==="risposta")parla("risposta","Allora, giocatore… ci sarai alla festa?");
   if(id==="tabellone")mostraTab();
   if(id==="scelte")prepScelte();}
-function dopoBoot(){const r=store.get("risposta",null);
+function dopoBoot(){if(API){$("proto").hidden=true;svuotaCoda();api("stato")}const r=store.get("risposta",null);
   if(!r){vai("locandina");return}
   if(!store.get("giocatore",null)){apriCrea();return}
   if(r==="si"&&!store.get("scelte",null)){mancaAvviso=true;vai("scelte");return}
@@ -477,8 +537,18 @@ $("start").onclick=()=>avvia(true);$("muto").onclick=()=>avvia(false);
 
 /* ---------- Locandina e risposta ---------- */
 $("aRisposta").onclick=()=>{sfx("click");vai("risposta")};
+$("hoCodice").onclick=()=>{$("recPanel").hidden=false;$("recCod").focus()};
+$("recVai").onclick=async()=>{const c=$("recCod").value.trim().toUpperCase();if(c.length!==4){$("recErr").textContent="Il codice ha 4 caratteri.";return}
+  if(!API){$("recErr").textContent="Nel prototipo il recupero non è ancora attivo.";return}
+  $("recErr").textContent="Cerco il giocatore…";const r=await api("recupera",{codice:c});
+  if(!r){$("recErr").textContent="Connessione assente: riprova tra poco.";return}
+  if(!r.ok){$("recErr").textContent="Codice non trovato: controlla le lettere.";return}
+  const g=r.giocatore;usaProfilo(c);store.set("codice",c);if(g.personaggio&&g.personaggio.colore){store.set("giocatore",g.personaggio);G=g.personaggio}
+  store.set("risposta",g.risposta||"no");if(g.scelte)store.set("scelte",g.scelte);
+  const f={};Object.keys(g.record||{}).forEach(n=>{f[n]=true;store.set("rec"+n,g.record[n])});store.set("fatti",f);salvaProfilo();
+  $("recErr").textContent="";$("recPanel").hidden=true;sfx("registrato");dialogo("BENTORNATO!",nickDi(G)+" è di nuovo in gioco.");dopoBoot()};
 let daMenu=false;
-function rispondi(v){store.set("risposta",v);sfx(v==="si"?"start":"click");
+function rispondi(v){store.set("risposta",v);if(store.get("codice",""))invia("risposta",{codice:store.get("codice"),risposta:v});sfx(v==="si"?"start":"click");
   const voceRisp=()=>v==="si"?parla("si","Grandioso! Sei dei nostri!"):parla("no","Peccato! Ma puoi giocare lo stesso, insieme ai tuoi compagni!");
   if(daMenu&&store.get("giocatore",null)){daMenu=false;if(v==="si"&&!store.get("scelte",null)){vai("scelte")}else{voceRisp();
     dialogo(v==="si"?"CI SEI!":"RISPOSTA CAMBIATA",v==="si"?"Ottimo! Ti aspettiamo alla festa.":"Ci mancherai! Puoi continuare a giocare ai livelli.");vai("tabellone")}return}
@@ -511,13 +581,14 @@ $("comeAvanti").onclick=()=>{if(iCome<3)come(iCome+1);else if(daMenuCome){daMenu
 /* ---------- Personaggio ---------- */
 const PA=["Turbo","Mega","Super","Pixel","Ninja","Laser","Neon","Cyber"];
 const PB=["Fulmine","Cometa","Stella","Razzo","Drago","Fenice","Pantera","Tigre","Volpe","Lampo","Meteora","Gemma","Saetta","Falco","Unicorno","Vulcano"];
-const PRESI=["Turbo Drago","Neon Cometa","Pixel Fenice","Mega Razzo","Ninja Volpe","Super Stella"]; /* esempio: nel sistema vero arrivano dal Foglio */
+const PRESI_ESEMPIO=["Turbo Drago","Neon Cometa","Pixel Fenice","Mega Razzo","Ninja Volpe","Super Stella"]; /* solo nel prototipo senza Foglio */
+const presiOra=()=>API?((STATO&&STATO.presi)||[]):PRESI_ESEMPIO;
 let G=store.get("giocatore",null)||{a:Math.random()*8|0,b:Math.random()*16|0,colore:"Verde",capelli:"Corti",tinta:"Castani",pelle:0};
 const nickDi=o=>PA[o.a]+" "+PB[o.b];
-const preso=o=>{const mio=store.get("giocatore",null);return PRESI.includes(nickDi(o))&&!(mio&&nickDi(mio)===nickDi(o))};
+const preso=o=>{const mio=store.get("giocatore",null);return presiOra().includes(nickDi(o))&&!(mio&&nickDi(mio)===nickDi(o))};
 function chips(id,valori,chiave,render){const box=$(id);box.innerHTML="";valori.forEach((v,i)=>{const b=document.createElement("button");b.className="chip";b.type="button";
   const val=chiave==="pelle"?i:v;render(b,v,i);b.setAttribute("aria-pressed",G[chiave]===val);b.onclick=()=>{G[chiave]=val;sfx("click");aggCrea();chips(id,valori,chiave,render)};box.appendChild(b)})}
-function apriCrea(){vai("crea");parla("crea","Scegli un nickname e il tuo aspetto. Fatti riconoscere!");
+function apriCrea(){vai("crea");if(API)api("stato").then(()=>{if($("crea").classList.contains("on"))aggCrea()});parla("crea","Scegli un nickname e il tuo aspetto. Fatti riconoscere!");
   chips("chColore",Object.keys(COLORI),"colore",(b,v)=>{b.classList.add("colore");b.style.background=COLORI[v];b.setAttribute("aria-label",v);b.title=v});
   chips("chCapelli",Object.keys(CAPELLI),"capelli",(b,v)=>{b.textContent=v});
   chips("chTinta",Object.keys(TINTE),"tinta",(b,v)=>{b.classList.add("colore");b.style.background=TINTE[v];b.setAttribute("aria-label",v);b.title=v});
@@ -528,7 +599,14 @@ function aggCrea(){$("pa").textContent=PA[G.a].toUpperCase();$("pb").textContent
   $("nickStato").className="stato "+(p?"preso":"libero");$("salvaG").disabled=p;disegnaAv($("avCv"),G,0)}
 document.querySelectorAll(".freccia").forEach(b=>b.onclick=()=>{const k=b.dataset.p,len=k==="a"?8:16;G[k]=(G[k]+(+b.dataset.d)+len)%len;sfx("click");aggCrea()});
 $("dado").onclick=()=>{let t=0;do{G.a=Math.random()*8|0;G.b=Math.random()*16|0;t++}while(preso(G)&&t<50);sfx("moneta");aggCrea()};
-$("salvaG").onclick=()=>{if(preso(G))return;const nuovo=!store.get("giocatore",null);store.set("giocatore",G);sfx("start");
+$("salvaG").onclick=async()=>{if(preso(G))return;
+  if(API){const b=$("salvaG");b.disabled=true;b.textContent="SALVATAGGIO…";
+    const r=await api("prenota",{nick:nickDi(G),personaggio:G,risposta:store.get("risposta","no"),codice:store.get("codice","")});
+    b.textContent="SONO PRONTO!";b.disabled=false;
+    if(!r){$("nickStato").textContent="Connessione assente: controlla internet e riprova.";$("nickStato").className="stato preso";return}
+    if(!r.ok&&r.errore==="preso"){aggCrea();$("nickStato").textContent="🔒 Qualcuno l'ha appena preso: cambia una parola.";return}
+    if(r.ok&&r.codice){const vecchio=ATT;store.set("codice",r.codice);if(vecchio!==r.codice){migraProfilo(vecchio,r.codice)}}}
+  store.set("giocatore",G);salvaProfilo();sfx("start");
   parla("pronto","Grande! Ora sei nella squadra di Filippo!");
   if(store.get("risposta")==="si"&&!store.get("scelte",null))vai("scelte");else vai("tabellone")};
 
@@ -544,7 +622,9 @@ $("form").onsubmit=e=>{e.preventDefault();const v=k=>document.querySelector("inp
   else if(!d.gen)err="Indica se un genitore può restare.";else if(!d.tel)err="Scrivi un numero di telefono.";
   $("errore").textContent=err;if(err)return;
   store.set("scelte",d);sfx("registrato");
-  dialogo("GIOCATORE 8 REGISTRATO!",nickDi(G)+" è nella squadra di Filippo. Ci vediamo il 15 novembre al Cinelandia!");
+  const cod=store.get("codice","");if(cod)invia("scelte",{codice:cod,scelte:d});
+  const num=STATO?STATO.pronti+(store.get("risposta")==="si"?0:1):8;
+  dialogo("GIOCATORE REGISTRATO!",nickDi(G)+" è nella squadra di Filippo. Ci vediamo il 15 novembre al Cinelandia!"+(cod?" Il tuo codice giocatore è "+cod+": scrivilo, serve per giocare su un altro telefono.":""));
   parla("registrato","Iscrizione completata! Ci vediamo alla festa!");vai("tabellone")};
 function dialogo(tit,txt){disegnaAv($("dAv"),G,0);$("dTit").textContent=tit;$("dTxt").textContent=txt;$("dialogo").classList.add("on");$("dOk").focus()}
 $("dOk").onclick=()=>$("dialogo").classList.remove("on");
@@ -574,26 +654,52 @@ function mostraTab(){if(store.get("risposta")==="si"&&!store.get("scelte",null))
   for(let n=1;n<=8;n++){const b=document.createElement("button");b.className="liv";b.type="button";
     if(fatti[n]){b.classList.add("fatto");b.innerHTML=n+"<small>"+LIVELLI[n].nome+"<br>Record "+store.get("rec"+n,0)+"</small>";b.onclick=()=>gioca(n)}
     else if(aperto(n)){b.innerHTML=n+"<small>"+LIVELLI[n].nome+"<br>Gioca!</small>";b.onclick=()=>gioca(n)}
-    else{b.classList.add("chiuso");b.innerHTML="🔒<small>Si apre il "+dataBreve(LIVELLI[n].apre)+"</small>";b.disabled=true}
+    else{b.classList.add("chiuso");b.innerHTML="🔒<small>Si apre il "+dataBreve(LIVELLI[n].apre)+"<br>Anteprima</small>";b.onclick=()=>anteprima(n)}
     gr.appendChild(b)}
   const boss=document.createElement("button");boss.type="button";boss.className="liv boss";boss.onclick=()=>parla("castello","Vi aspetto nel mio castello… il quindici novembre! Eh eh eh!");boss.innerHTML="9<small id='cd'></small>";gr.appendChild(boss);
   const agg=()=>{const ms=FESTA-new Date();const el=document.getElementById("cd");if(!el)return;
     if(ms<=0){el.textContent="Si gioca alla festa!";return}const gg=Math.floor(ms/864e5),hh=Math.floor(ms/36e5)%24;el.textContent="Castello di Re Glitch · tra "+gg+" g "+hh+" h"};
   agg();clearInterval(countT);countT=setInterval(agg,30000);
-  $("pronti").textContent=store.get("risposta")==="si"?8:7}
-$("titTab").onclick=()=>{if(++tapTit>=5){tapTit=0;store.set("prova",!prova());sfx("aiuto");mostraTab();
-  dialogo(prova()?"TRUCCO ATTIVO":"TRUCCO SPENTO",prova()?"Tutti i livelli sono aperti per la prova.":"I livelli tornano ad aprirsi alle loro date.")}};
+  aggContatore();if(API)api("stato").then(aggContatore)}
+function aggContatore(){if(API&&STATO){$("pronti").textContent=STATO.pronti;$("totale").textContent=STATO.totale;$("notaPronti").textContent="Si aggiorna ogni volta che qualcuno conferma.";
+    const l=(STATO.classifica||[]).filter(x=>x.candeline>0).slice(0,5);$("classPanel").hidden=!l.length;
+    $("classifica").innerHTML="";l.forEach(x=>{const li=document.createElement("li");li.textContent=x.nick+" · "+x.candeline+" candeline · "+x.monete+" monete";$("classifica").appendChild(li)})}
+  else if(!API){$("pronti").textContent=store.get("risposta")==="si"?8:7}}
+$("titTab").onclick=()=>{if(++tapTit>=5){tapTit=0;$("trCod").value="";$("trDlg").classList.add("on");$("trCod").focus()}};
+$("trNo").onclick=()=>$("trDlg").classList.remove("on");
+$("trOk").onclick=()=>{$("trDlg").classList.remove("on");if($("trCod").value.trim()!==CODICE_PROVA)return;store.set("prova",!prova());sfx("aiuto");mostraTab();
+  dialogo(prova()?"TRUCCO ATTIVO":"TRUCCO SPENTO",prova()?"Tutti i livelli sono aperti per la prova.":"I livelli tornano ad aprirsi alle loro date.")};
 $("menuBtn").onclick=()=>{const m=$("menuTab");const on=!m.classList.contains("on");m.classList.toggle("on",on);$("menuBtn").setAttribute("aria-expanded",on);sfx("click")};
 $("mLocandina").onclick=()=>{$("menuTab").classList.remove("on");vai("locandina");$("aRisposta").textContent="AVANTI ▶";daMenu=true};
 $("mRisposta").onclick=()=>{$("menuTab").classList.remove("on");daMenu=true;vai("risposta")};
 $("mScelte").onclick=()=>{$("menuTab").classList.remove("on");vai("scelte")};
 $("mGiocatore").onclick=()=>{$("menuTab").classList.remove("on");apriCrea()};
+$("mCodice").onclick=()=>{$("menuTab").classList.remove("on");const c=store.get("codice","");
+  dialogo("IL TUO CODICE",c?"Il codice di "+nickDi(G)+" è "+c+". Sull'altro telefono apri il link, tocca «Hai già un codice giocatore?» e scrivilo.":"Il codice arriva appena il gioco si collega a internet.")};
+$("mAltro").onclick=()=>{$("menuTab").classList.remove("on");apriSel()};
+function apriSel(){const box=$("selLista");box.innerHTML="";profili().forEach(pr=>{const b=document.createElement("button");b.className="btn b-giallo";b.type="button";
+    b.textContent=pr.nick+(pr.id===ATT?" (ora)":"");b.onclick=()=>{$("selDlg").classList.remove("on");usaProfilo(pr.id);G=store.get("giocatore",G);dopoBoot()};box.appendChild(b)});
+  $("selDlg").classList.add("on")}
+$("selChiudi").onclick=()=>$("selDlg").classList.remove("on");
+$("selNuovo").onclick=()=>{$("selDlg").classList.remove("on");usaProfilo("p"+Date.now());G={a:Math.random()*8|0,b:Math.random()*16|0,colore:"Verde",capelli:"Corti",tinta:"Castani",pelle:0};vai("locandina")};
 $("mCome").onclick=()=>{$("menuTab").classList.remove("on");daMenuCome=true;come(0)};
 $("mAudio").onclick=()=>{audioOn=!audioOn;store.set("audio",audioOn);if(audioOn){initAudio();suona("menu")}else{musicaOff();try{voce.pause()}catch(e){}}$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");sfx("click")};
 $("mMusica").onclick=()=>{musicaSi=!musicaSi;store.set("musica",musicaSi);if(musicaSi){initAudio();suona("menu")}else musicaOff();$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");sfx("click")};
 
 /* ---------- Motore di gioco ---------- */
-const cv=$("cv"),ctx=cv.getContext("2d");const W=256,H=224,SUOLO=196;
+const cv=$("cv"),ctxGioco=cv.getContext("2d");let ctx=ctxGioco;const W=256,H=224,SUOLO=196;
+/* Anteprima di un livello chiuso: la scena si muove ma non si gioca */
+let antRaf=null;
+function anteprima(n){const L=LIVELLI[n];$("antTit").textContent="LIVELLO "+n+" · "+L.nome;$("antTxt").textContent=L.novita;
+  const apre=new Date(L.apre+"T00:00:00+01:00");const cd=()=>{const ms=apre-new Date();if(ms<=0){$("antCd").textContent="È aperto!";return}
+    $("antCd").textContent="SI APRE TRA "+Math.floor(ms/864e5)+" G "+(Math.floor(ms/36e5)%24)+" H"};cd();
+  $("antDlg").classList.add("on");parla("liv"+n,FRASI_LIV[n]);const pc=$("antCv").getContext("2d");let cam=0;const T=TEMI[n];
+  const giro=()=>{cam+=1.4;ctx=pc;pc.imageSmoothingEnabled=false;pc.drawImage(fondo(n),0,0);scena(n,cam);
+    pc.fillStyle=T.terra;pc.fillRect(0,SUOLO,W,H-SUOLO);pc.fillStyle=T.suolo;pc.fillRect(0,SUOLO,W,2);const o3=-(cam)%16;for(let x=o3;x<W;x+=16)pc.fillRect(Math.round(x),SUOLO+6,8,2);
+    if(n===7){pc.fillStyle="rgba(0,0,0,.55)";pc.fillRect(0,0,W,H)}
+    pc.fillStyle="rgba(0,0,0,.6)";pc.fillRect(70,92,116,30);pc.fillStyle="#ffd23f";pc.font="10px 'Press Start 2P', monospace";pc.textBaseline="middle";pc.textAlign="center";pc.fillText("ANTEPRIMA",128,107);pc.textAlign="left";
+    ctx=ctxGioco;antRaf=requestAnimationFrame(giro)};cancelAnimationFrame(antRaf);giro()}
+$("antOk").onclick=()=>{$("antDlg").classList.remove("on");cancelAnimationFrame(antRaf)};
 let S=null,raf=null,ultimo=0,acc=0;
 function rng(seed){let s=seed*9301+49297;return()=>{s=(s*9301+49297)%233280;return s/233280}}
 function regole(n){return{vel:2.05+(n-1)*.13,passo:Math.max(122,190-n*7),lung:4000+n*300,
@@ -649,6 +755,7 @@ function passo(){const s=S;s.t++;s.cam+=s.R.vel;const px=s.cam+48,cx=px+16;
   if(px>=s.lv.fine)fine(true)}
 function fine(vinto){const s=S;s.stato="fine";musicaOff();cancelAnimationFrame(raf);
   if(vinto){const f=store.get("fatti",{});f[s.n]=true;store.set("fatti",f);store.set("fail"+s.n,0);const rec=Math.max(store.get("rec"+s.n,0),s.monete);store.set("rec"+s.n,rec);sfx("vittoria");
+    if(store.get("codice",""))invia("record",{codice:store.get("codice"),livello:s.n,monete:s.monete});
     $("fineTit").textContent="CANDELINA "+s.n+"/9!";
     $("fineTxt").innerHTML="Hai recuperato la candelina "+s.n+".<br>Monete: <b>"+s.monete+"</b> su "+s.lv.mon.length+" · Record: <b>"+rec+"</b>";
     parla("vinto","Candelina recuperata! Grande!")}
