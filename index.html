@@ -110,6 +110,10 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
 .opz label{flex-direction:row;align-items:center;gap:8px;background:#123a9a;border:3px solid #000;border-radius:3px;padding:10px 12px;font-weight:400;cursor:pointer}
 .opz input{accent-color:var(--neon);width:18px;height:18px}
 .errore{color:var(--rosso);font-weight:600;font-size:15px;min-height:1.2em}
+.pulsa{animation:pulsa 1.1s ease-in-out infinite}
+@keyframes pulsa{0%,100%{transform:scale(1);box-shadow:0 5px 0 #000,0 0 0 0 rgba(255,210,63,.7)}50%{transform:scale(1.04);box-shadow:0 5px 0 #000,0 0 0 10px rgba(255,210,63,0)}}
+.cal-ok{font-family:var(--pixel);font-size:10px;color:var(--neon);text-align:center;line-height:1.8}
+.comunica{border-color:var(--sole)}.comunica h3{color:var(--sole)}.comunica .film{font-family:var(--pixel);font-size:12px;color:#fff;line-height:1.7}
 .avviso{background:var(--sole);color:#06103a;border:3px solid #000;padding:12px;font-weight:600;border-radius:3px}
 
 /* Tabellone */
@@ -194,9 +198,15 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
   <section class="screen" id="risposta" aria-label="Ci sarai?">
     <h1 class="titolo">CI SARAI?</h1>
     <div class="pannello"><p style="text-align:center">Domenica 15 novembre, dalle 15:00 alle 18:30, al Cinelandia Milano Certosa.</p></div>
+    <div class="pannello">
+      <label for="nomeR">Come ti chiami? Scrivi nome e cognome
+        <input type="text" id="nomeR" autocomplete="off" placeholder="Es. Giulia Rossi" maxlength="60">
+      </label>
+      <p class="errore" id="erroreR" role="alert"></p>
+    </div>
     <button class="btn b-verde grande" id="rSi">SÌ, CI SARÒ!</button>
     <button class="btn b-rosso grande" id="rNo">NO, NON POSSO</button>
-    <p class="nota" style="text-align:center">Puoi cambiare risposta anche dopo, dal menù del gioco.</p>
+    <p class="nota" style="text-align:center">Se poi cambi idea, riapri il link e cambia risposta.</p>
   </section>
 
   <!-- 3 COME FUNZIONA -->
@@ -298,7 +308,34 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
       <h3>AREA GENITORI</h3>
       <p>Arrivo alle 15:00, ritiro alle 18:30. Al Cinelandia non si può portare cibo da casa, a parte la merenda per chi è celiaco. Per qualsiasi domanda: Valentina, 388 470 3135.</p>
       <p class="nota">Nickname e personaggio si vedono nel gioco; nome, telefono e allergie li leggono solo gli organizzatori.</p>
+      <h3>🔔 NON PERDERE I PROSSIMI LIVELLI</h3>
+      <p>I livelli si sbloccano uno alla volta fino al giorno della festa. Se vuoi che tua figlia o tuo figlio non ne perda nessuno, aggiungi le date al calendario del tuo telefono: riceverai un promemoria la mattina di ogni sblocco, e uno per la festa.</p>
+      <a class="btn b-giallo pulsa calBtn" href="livelli.ics" style="text-align:center;text-decoration:none">🔔 AGGIUNGI LE DATE AL CALENDARIO</a>
+      <p class="cal-ok" hidden>PROMEMORIA SCARICATI! ★<br><span style="font-family:var(--testo);font-size:13px;color:#fff">Se il calendario non si apre da solo, tocca il file «livelli.ics» appena scaricato.</span></p>
     </div>
+  </section>
+
+  <!-- AREA GENITORI (dal menù del tabellone) -->
+  <section class="screen" id="genitori" aria-label="Area genitori">
+    <div class="pannello">
+      <h3>AREA GENITORI</h3>
+      <p>Arrivo alle 15:00, ritiro alle 18:30. Al Cinelandia non si può portare cibo da casa, a parte la merenda per chi è celiaco. Per qualsiasi domanda: Valentina, 388 470 3135.</p>
+      <p class="nota">Nickname e personaggio si vedono nel gioco; nome, telefono e allergie li leggono solo gli organizzatori.</p>
+      <h3>🔔 NON PERDERE I PROSSIMI LIVELLI</h3>
+      <p>I livelli si sbloccano uno alla volta fino al giorno della festa. Se vuoi che tua figlia o tuo figlio non ne perda nessuno, aggiungi le date al calendario del tuo telefono: riceverai un promemoria la mattina di ogni sblocco, e uno per la festa.</p>
+      <a class="btn b-giallo pulsa calBtn" href="livelli.ics" style="text-align:center;text-decoration:none">🔔 AGGIUNGI LE DATE AL CALENDARIO</a>
+      <p class="cal-ok" hidden>PROMEMORIA SCARICATI! ★<br><span style="font-family:var(--testo);font-size:13px;color:#fff">Se il calendario non si apre da solo, tocca il file «livelli.ics» appena scaricato.</span></p>
+    </div>
+    <button class="btn b-blu" id="genEsci">◀ TORNA AL TABELLONE</button>
+  </section>
+
+  <!-- CHI NON VIENE -->
+  <section class="screen" id="ciao" aria-label="Ci mancherai">
+    <h1 class="titolo">CI MANCHERAI!</h1>
+    <canvas class="px" id="ciaoCv" width="16" height="16" style="width:128px;height:128px;align-self:center"></canvas>
+    <div class="pannello"><p style="text-align:center" id="ciaoTxt">Grazie per aver risposto! Filippo ti saluta.</p>
+      <p class="nota" style="text-align:center">Il gioco delle 9 candeline è riservato ai giocatori che vengono alla festa. Se cambi idea, puoi ancora rispondere di sì.</p></div>
+    <button class="btn b-verde" id="cambiaSi">HO CAMBIATO IDEA: CI SARÒ!</button>
   </section>
 
   <!-- 6 TABELLONE -->
@@ -316,11 +353,13 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
         <button class="btn b-blu" id="mGiocatore">MODIFICA IL PERSONAGGIO</button>
         <button class="btn b-blu" id="mCodice">IL MIO CODICE GIOCATORE</button>
         <button class="btn b-blu" id="mAltro">GIOCA CON UN ALTRO GIOCATORE</button>
+        <button class="btn b-giallo" id="mGenitori">🔔 AREA GENITORI</button>
         <button class="btn b-blu" id="mCome">COME FUNZIONA</button>
         <button class="btn b-blu" id="mMusica">MUSICA: SÌ</button>
         <button class="btn b-blu" id="mAudio">AUDIO: SÌ</button>
       </div>
     </div>
+    <div class="pannello comunica" id="comPanel" hidden><h3>📣 COMUNICAZIONI</h3><div id="comBox"></div></div>
     <h2 id="titTab">LE 9 CANDELINE</h2>
     <div class="candele" id="candele"></div>
     <div class="griglia" id="griglia"></div>
@@ -398,7 +437,7 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
 "use strict";
 const $=id=>document.getElementById(id);
 /* Ogni giocatore sullo stesso telefono ha i suoi dati (profilo). Audio, musica e trucco valgono per tutti. */
-const GLOBALI=new Set(["audio","musica","prova","attivo","profili"]);
+const GLOBALI=new Set(["audio","musica","prova","attivo","profili","calendario"]);
 const ls={get(k,d){try{const v=localStorage.getItem("fl9_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("fl9_"+k,JSON.stringify(v))}catch(e){}}};
 let ATT=ls.get("attivo","p1");
 const store={get(k,d){return ls.get(GLOBALI.has(k)?k:ATT+"_"+k,d)},set(k,v){ls.set(GLOBALI.has(k)?k:ATT+"_"+k,v)}};
@@ -446,6 +485,8 @@ function sfx(nome){if(!audioOn||!ac)return;const t=ac.currentTime;
   if(nome==="vittoria"){[72,76,79,84,79,84,88].forEach((n,i)=>nota(N(n),t+i*.11,i===6?.5:.13))}
   if(nome==="gameover"){[67,63,60,55].forEach((n,i)=>nota(N(n),t+i*.18,.22,"triangle",.09))}
   if(nome==="aiuto"){[72,79,84,91].forEach((n,i)=>nota(N(n),t+i*.08,.16,"triangle",.07))}
+  if(nome==="powerup"){[60,67,72,76,79,84,88,91].forEach((n,i)=>nota(N(n),t+i*.05,.09,"square",.05));nota(N(96),t+.42,.35,"triangle",.07)}
+  if(nome==="blip"){nota(N(88),t,.04,"square",.025);nota(N(93),t+.05,.05,"square",.025)}
   if(nome==="registrato"){[60,64,67,72,76,79,84].forEach((n,i)=>nota(N(n),t+i*.07,.12));nota(N(84),t+.55,.6,"triangle",.07)}}
 /* Musica originale in stile sala giochi anni '80 (composta per questo gioco). Ogni passo è un ottavo; 0 = pausa. */
 const BRANI={
@@ -465,7 +506,7 @@ function abbassa(si){if(mg&&ac)mg.gain.setTargetAtTime(si?.25:1,ac.currentTime,.
 
 /* Voci: qui arriveranno gli mp3 generati con ElevenLabs. Per ora si vedono solo i sottotitoli. */
 /* Voci generate con ElevenLabs (Annunciatore e Re Glitch): file nella cartella voci/ */
-const IDV=["locandina","risposta","si","no","come1","come2","come3","come4","crea","pronto","scelte","registrato","liv1","liv2","liv3","liv4","liv5","liv6","liv7","liv8","vinto","aiuto","perso","re1","castello"];
+const IDV=["locandina","risposta","si","no","come1","come2","come3","come4","crea","pronto","scelte","registrato","liv1","liv2","liv3","liv4","liv5","liv6","liv7","liv8","vinto","aiuto","perso","re1","castello","avvisi"];
 const VOCI={};IDV.forEach(k=>VOCI[k]="voci/fl9_"+k+".mp3");
 const voce=new Audio();voce.preload="auto";let sotTimer=null,dopo=null;
 voce.addEventListener("play",()=>abbassa(true));voce.addEventListener("pause",()=>abbassa(false));
@@ -529,11 +570,14 @@ let anim=null;
 function vai(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));scrollTo(0,0);clearInterval(anim);
   if(id==="gioco")musicaOff();else if(id!=="boot")suona("menu");
   if(id==="locandina"){animaPoster();parla("locandina","Attenzione, giocatore! Filippo compie nove anni… e Re Glitch gli ha rubato le candeline!")}
-  if(id==="risposta")parla("risposta","Allora, giocatore… ci sarai alla festa?");
+  if(id==="risposta"){$("nomeR").value=store.get("nome","")||(store.get("scelte",null)||{}).nome||"";$("erroreR").textContent="";parla("risposta","Allora, giocatore… ci sarai alla festa?")}
   if(id==="tabellone")mostraTab();
-  if(id==="scelte")prepScelte();}
+  if(id==="scelte")prepScelte();
+  if(id==="ciao")prepCiao();
+  if(id==="genitori")aggCal();}
 function dopoBoot(){if(API){$("proto").hidden=true;svuotaCoda();api("stato")}const r=store.get("risposta",null);
   if(!r){vai("locandina");return}
+  if(r==="no"){vai("ciao");return}
   if(!store.get("giocatore",null)){apriCrea();return}
   if(r==="si"&&!store.get("scelte",null)){mancaAvviso=true;vai("scelte");return}
   vai("tabellone")}
@@ -553,15 +597,25 @@ $("recVai").onclick=async()=>{const c=$("recCod").value.trim().toUpperCase();if(
   if(!r){$("recErr").textContent="Connessione assente: riprova tra poco.";return}
   if(!r.ok){$("recErr").textContent="Codice non trovato: controlla le lettere.";return}
   const g=r.giocatore;usaProfilo(c);store.set("codice",c);if(g.personaggio&&g.personaggio.colore){store.set("giocatore",g.personaggio);G=g.personaggio}
-  store.set("risposta",g.risposta||"no");if(g.scelte)store.set("scelte",g.scelte);
+  store.set("risposta",g.risposta||"no");if(g.nome)store.set("nome",g.nome);if(g.scelte)store.set("scelte",g.scelte);
   const f={};Object.keys(g.record||{}).forEach(n=>{f[n]=true;store.set("rec"+n,g.record[n])});store.set("fatti",f);salvaProfilo();
   $("recErr").textContent="";$("recPanel").hidden=true;sfx("registrato");dialogo("BENTORNATO!",nickDi(G)+" è di nuovo in gioco.");dopoBoot()};
 let daMenu=false;
-function rispondi(v){store.set("risposta",v);if(store.get("codice",""))invia("risposta",{codice:store.get("codice"),risposta:v});sfx(v==="si"?"start":"click");
-  const voceRisp=()=>v==="si"?parla("si","Grandioso! Sei dei nostri!"):parla("no","Peccato! Ma puoi giocare lo stesso, insieme ai tuoi compagni!");
-  if(daMenu&&store.get("giocatore",null)){daMenu=false;if(v==="si"&&!store.get("scelte",null)){vai("scelte")}else{voceRisp();
-    dialogo(v==="si"?"CI SEI!":"RISPOSTA CAMBIATA",v==="si"?"Ottimo! Ti aspettiamo alla festa.":"Ci mancherai! Puoi continuare a giocare ai livelli.");vai("tabellone")}return}
-  come(0,true)}
+async function rispondi(v){const nome=$("nomeR").value.trim().replace(/\s+/g," ");
+  if(nome.length<2){$("erroreR").textContent="Prima scrivi il tuo nome e cognome.";$("nomeR").focus();sfx("colpo");return}
+  $("erroreR").textContent="";store.set("nome",nome);store.set("risposta",v);sfx(v==="si"?"start":"click");
+  const b1=$("rSi"),b2=$("rNo");b1.disabled=b2.disabled=true;
+  const r=await invia("iscrivi",{nome:nome,risposta:v,codice:store.get("codice","")});b1.disabled=b2.disabled=false;
+  if(r&&r.ok&&r.codice){const vecchio=ATT;store.set("codice",r.codice);if(vecchio!==r.codice)migraProfilo(vecchio,r.codice)}
+  salvaProfilo();
+  if(v==="no"){daMenu=false;vai("ciao");return}
+  if(daMenu&&store.get("giocatore",null)){daMenu=false;if(!store.get("scelte",null)){vai("scelte")}else{parla("si","Grandioso! Sei dei nostri!");
+    dialogo("CI SEI!","Ottimo! Ti aspettiamo alla festa.");vai("tabellone")}return}
+  daMenu=false;come(0,true)}
+function prepCiao(){const c=$("ciaoCv");disegnaAv(c,FILIPPO,0);const n=store.get("nome","");
+  $("ciaoTxt").textContent=(n?"Grazie "+n.split(" ")[0]+"! ":"Grazie! ")+"Abbiamo ricevuto la tua risposta: Filippo ti saluta e ti racconterà com'è andata.";
+  parla("no","Peccato! Ci mancherai alla festa. Se cambi idea, torna qui e premi il pulsante verde!")}
+$("cambiaSi").onclick=()=>{sfx("click");daMenu=true;vai("risposta")};
 $("rSi").onclick=()=>rispondi("si");$("rNo").onclick=()=>rispondi("no");
 
 /* ---------- Come funziona ---------- */
@@ -570,11 +624,10 @@ const COME=[
  {id:"come2",t:"Ogni livello si apre in un giorno diverso, fino al 14 novembre. Supera un livello e recuperi una candelina!",chi:"candela"},
  {id:"come3",t:"Il nono livello è il castello di Re Glitch: lo affronteremo tutti insieme, alla festa.",chi:"castello"},
  {id:"come4",t:"Adesso crea il tuo giocatore: scegli il nickname e come vuoi essere. Alla festa ti aspetta una sorpresa!",chi:"filippo"}];
-const COME_NO="Anche se non puoi venire alla festa, puoi giocare ai livelli insieme ai tuoi compagni. Adesso crea il tuo giocatore!";
 let iCome=0,daMenuCome=false,dopoCome=null;
-function come(i,primaVolta){iCome=i;vai("come");const f=COME[i];const testo=(i===3&&store.get("risposta")==="no")?COME_NO:f.t;$("comeTxt").textContent=testo;
+function come(i,primaVolta){iCome=i;vai("come");const f=COME[i];const testo=f.t;$("comeTxt").textContent=testo;
   const seguito=i===0?["re1","Le candeline di Filippo? Adesso sono mie! Ah ah ah!"]:null;
-  if(primaVolta){const si=store.get("risposta")==="si";parla(si?"si":"no",si?"Grandioso! Sei dei nostri!":"Peccato! Ma puoi giocare lo stesso, insieme ai tuoi compagni!",[f.id,testo]);dopoCome=seguito}
+  if(primaVolta){parla("si","Grandioso! Sei dei nostri!",[f.id,testo]);dopoCome=seguito}
   else parla(f.id,testo,seguito);
   const cv=$("comeCv"),g=cv.getContext("2d");clearInterval(anim);
   const draw=()=>{g.clearRect(0,0,cv.width,cv.height);
@@ -610,19 +663,20 @@ document.querySelectorAll(".freccia").forEach(b=>b.onclick=()=>{const k=b.datase
 $("dado").onclick=()=>{let t=0;do{G.a=Math.random()*8|0;G.b=Math.random()*16|0;t++}while(preso(G)&&t<50);sfx("moneta");aggCrea()};
 $("salvaG").onclick=async()=>{if(preso(G))return;
   if(API){const b=$("salvaG");b.disabled=true;b.textContent="SALVATAGGIO…";
-    const r=await api("prenota",{nick:nickDi(G),personaggio:G,risposta:store.get("risposta","no"),codice:store.get("codice","")});
+    const r=await api("prenota",{nick:nickDi(G),personaggio:G,risposta:store.get("risposta","no"),codice:store.get("codice",""),nome:store.get("nome","")});
     b.textContent="SONO PRONTO!";b.disabled=false;
     if(!r){$("nickStato").textContent="Connessione assente: controlla internet e riprova.";$("nickStato").className="stato preso";return}
     if(!r.ok&&r.errore==="preso"){aggCrea();$("nickStato").textContent="🔒 Qualcuno l'ha appena preso: cambia una parola.";return}
     if(r.ok&&r.codice){const vecchio=ATT;store.set("codice",r.codice);if(vecchio!==r.codice){migraProfilo(vecchio,r.codice)}}}
   store.set("giocatore",G);salvaProfilo();sfx("start");
   parla("pronto","Grande! Ora sei nella squadra di Filippo!");
-  if(store.get("risposta")==="si"&&!store.get("scelte",null))vai("scelte");else vai("tabellone")};
+  if(store.get("risposta")!=="si")vai("ciao");else if(!store.get("scelte",null))vai("scelte");else vai("tabellone")};
 
 /* ---------- Scelte ---------- */
 let mancaAvviso=false;
 function prepScelte(){$("mancano").hidden=!mancaAvviso;mancaAvviso=false;
   parla("scelte","Ultimo passo: passa il telefono a mamma o papà!");
+  if(!$("nome").value)$("nome").value=store.get("nome","");
   const sv=store.get("scelte",null);if(sv){["nome","menu","bibita","allergie","tel"].forEach(k=>{if(sv[k]!=null)$(k).value=sv[k]});
     ["cel","gen"].forEach(k=>{if(sv[k]){const r=document.querySelector("input[name="+k+"][value="+sv[k]+"]");if(r)r.checked=true}})}}
 $("form").onsubmit=e=>{e.preventDefault();const v=k=>document.querySelector("input[name="+k+"]:checked")?.value;
@@ -630,11 +684,12 @@ $("form").onsubmit=e=>{e.preventDefault();const v=k=>document.querySelector("inp
   let err="";if(!d.nome)err="Scrivi nome e cognome.";else if(!d.menu)err="Scegli il baby menù.";else if(!d.bibita)err="Scegli la bibita.";
   else if(!d.gen)err="Indica se un genitore può restare.";else if(!d.tel)err="Scrivi un numero di telefono.";
   $("errore").textContent=err;if(err)return;
-  store.set("scelte",d);sfx("registrato");
+  store.set("scelte",d);store.set("nome",d.nome);sfx("registrato");
   const cod=store.get("codice","");if(cod)invia("scelte",{codice:cod,scelte:d});
   const num=STATO?STATO.pronti+(store.get("risposta")==="si"?0:1):8;
   dialogo("GIOCATORE REGISTRATO!",nickDi(G)+" è nella squadra di Filippo. Ci vediamo il 15 novembre al Cinelandia!"+(cod?" Il tuo codice giocatore è "+cod+": scrivilo, serve per giocare su un altro telefono.":""));
-  parla("registrato","Iscrizione completata! Ci vediamo alla festa!");vai("tabellone")};
+  store.set("avvisiDetto",true);
+  parla("registrato","Iscrizione completata! Ci vediamo alla festa!",["avvisi","Attenzione giocatore! Chiedi a mamma o papà di attivare gli avvisi: così non perdi nessun livello!"]);vai("tabellone")};
 function dialogo(tit,txt){disegnaAv($("dAv"),G,0);$("dTit").textContent=tit;$("dTxt").textContent=txt;$("dialogo").classList.add("on");$("dOk").focus()}
 $("dOk").onclick=()=>$("dialogo").classList.remove("on");
 
@@ -654,9 +709,11 @@ const prova=()=>store.get("prova",false);
 const aperto=n=>prova()||new Date()>=new Date(LIVELLI[n].apre+"T00:00:00+01:00");
 const dataBreve=s=>{const d=new Date(s+"T12:00:00+01:00");return d.getDate()+" "+["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"][d.getMonth()]};
 let countT=null,tapTit=0;
-function mostraTab(){if(store.get("risposta")==="si"&&!store.get("scelte",null)){mancaAvviso=true;vai("scelte");return}
+function mostraTab(){if(store.get("risposta")!=="si"){vai("ciao");return}
+  if(!store.get("scelte",null)){mancaAvviso=true;vai("scelte");return}
+  if(!store.get("avvisiDetto",false)){store.set("avvisiDetto",true);setTimeout(()=>parla("avvisi","Attenzione giocatore! Chiedi a mamma o papà di attivare gli avvisi: così non perdi nessun livello!"),600)}
   G=store.get("giocatore",G);disegnaAv($("tabAv"),G,0);$("tabNick").textContent=nickDi(G);
-  $("mScelte").hidden=store.get("risposta")!=="si";$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");
+  $("mScelte").hidden=false;$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");
   const fatti=store.get("fatti",{});const cand=$("candele");cand.innerHTML="";
   for(let i=1;i<=9;i++){const c=candelaCv(!!fatti[i]);c.className="px";c.setAttribute("aria-label","Candelina "+i+(fatti[i]?" recuperata":" da recuperare"));cand.appendChild(c)}
   const gr=$("griglia");gr.innerHTML="";
@@ -670,7 +727,10 @@ function mostraTab(){if(store.get("risposta")==="si"&&!store.get("scelte",null))
     if(ms<=0){el.textContent="Si gioca alla festa!";return}const gg=Math.floor(ms/864e5),hh=Math.floor(ms/36e5)%24;el.textContent="Castello di Re Glitch · tra "+gg+" g "+hh+" h"};
   agg();clearInterval(countT);countT=setInterval(agg,30000);
   aggContatore();if(API)api("stato").then(aggContatore)}
-function aggContatore(){if(API&&STATO){$("pronti").textContent=STATO.pronti;$("totale").textContent=STATO.totale;$("notaPronti").textContent="Si aggiorna ogni volta che qualcuno conferma.";
+function aggCom(){const c=STATO&&STATO.comunicazioni;const box=$("comBox");if(!c||(!c.film&&!(c.avvisi||[]).length)){$("comPanel").hidden=true;return}
+  box.innerHTML="";if(c.film){const p=document.createElement("p");p.className="film";p.textContent="🎬 IL FILM DELLA FESTA: "+c.film.toUpperCase();box.appendChild(p)}
+  (c.avvisi||[]).forEach(a=>{const p=document.createElement("p");p.textContent="• "+a;box.appendChild(p)});$("comPanel").hidden=false}
+function aggContatore(){aggCom();if(API&&STATO){$("pronti").textContent=STATO.pronti;$("totale").textContent=STATO.totale;$("notaPronti").textContent="Si aggiorna ogni volta che qualcuno conferma.";
     const l=(STATO.classifica||[]).filter(x=>x.candeline>0).slice(0,5);$("classPanel").hidden=!l.length;
     $("classifica").innerHTML="";l.forEach(x=>{const li=document.createElement("li");li.textContent=x.nick+" · "+x.candeline+" candeline · "+x.monete+" monete";$("classifica").appendChild(li)})}
   else if(!API){$("pronti").textContent=store.get("risposta")==="si"?8:7}}
@@ -691,6 +751,13 @@ function apriSel(){const box=$("selLista");box.innerHTML="";profili().forEach(pr
   $("selDlg").classList.add("on")}
 $("selChiudi").onclick=()=>$("selDlg").classList.remove("on");
 $("selNuovo").onclick=()=>{$("selDlg").classList.remove("on");usaProfilo("p"+Date.now());G={a:Math.random()*8|0,b:Math.random()*16|0,colore:"Verde",capelli:"Corti",tinta:"Castani",pelle:0};vai("locandina")};
+$("mGenitori").onclick=()=>{$("menuTab").classList.remove("on");vai("genitori")};
+$("genEsci").onclick=()=>{sfx("click");vai("tabellone")};
+function aggCal(){const fatto=store.get("calendario",false);document.querySelectorAll(".calBtn").forEach(b=>{b.classList.toggle("pulsa",!fatto);b.textContent=fatto?"🔔 SCARICA DI NUOVO LE DATE":"🔔 AGGIUNGI LE DATE AL CALENDARIO"});
+  document.querySelectorAll(".cal-ok").forEach(p=>p.hidden=!fatto)}
+document.querySelectorAll(".calBtn").forEach(b=>b.addEventListener("click",()=>{sfx("powerup");store.set("calendario",true);setTimeout(aggCal,300)}));
+setInterval(()=>{if(store.get("calendario",false))return;const v=document.querySelector(".screen.on");if(v&&(v.id==="genitori"||v.id==="scelte"))sfx("blip")},5000);
+aggCal();
 $("mCome").onclick=()=>{$("menuTab").classList.remove("on");daMenuCome=true;come(0)};
 $("mAudio").onclick=()=>{audioOn=!audioOn;store.set("audio",audioOn);if(audioOn){initAudio();suona("menu")}else{musicaOff();try{voce.pause()}catch(e){}}$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");sfx("click")};
 $("mMusica").onclick=()=>{musicaSi=!musicaSi;store.set("musica",musicaSi);if(musicaSi){initAudio();suona("menu")}else musicaOff();$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");sfx("click")};

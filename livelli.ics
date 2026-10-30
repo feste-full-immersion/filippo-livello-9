@@ -1,0 +1,141 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Feste Full Immersion//Filippo Livello 9//IT
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Filippo Livello 9
+BEGIN:VEVENT
+UID:fl9-livello2@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261103T063000Z
+DTEND:20261103T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 2: KIDS VILLAGE
+DESCRIPTION:Glitch giganti! Salta al momento giusto. Apri il gioco: https:/
+ /feste-full-immersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 2 sbloccato: KIDS VILLAGE!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-livello3@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261105T063000Z
+DTEND:20261105T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 3: NINJA
+DESCRIPTION:Da oggi hai il DOPPIO SALTO! Apri il gioco: https://feste-full-
+ immersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 3 sbloccato: NINJA!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-livello4@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261107T063000Z
+DTEND:20261107T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 4: SALA GIOCHI
+DESCRIPTION:Arrivano i Glitch volanti. Apri il gioco: https://feste-full-im
+ mersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 4 sbloccato: SALA GIOCHI!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-livello5@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261109T063000Z
+DTEND:20261109T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 5: THE CLIMB
+DESCRIPTION:Occhio alle buche nel pavimento! Apri il gioco: https://feste-f
+ ull-immersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 5 sbloccato: THE CLIMB!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-livello6@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261111T063000Z
+DTEND:20261111T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 6: BAR DEI POP-CORN
+DESCRIPTION:Sali sulle piattaforme per le monete in alto. Apri il gioco: ht
+ tps://feste-full-immersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 6 sbloccato: BAR DEI POP-CORN!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-livello7@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261112T063000Z
+DTEND:20261112T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 7: SALA AL BUIO
+DESCRIPTION:Si spengono le luci! Apri il gioco: https://feste-full-immersio
+ n.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 7 sbloccato: SALA AL BUIO!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-livello8@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261114T063000Z
+DTEND:20261114T064500Z
+SUMMARY:🎮 Filippo Livello 9 · si apre il livello 8: CORRIDOIO DEL CASTE
+ LLO
+DESCRIPTION:La prova finale\, più veloce che mai! Apri il gioco: https://f
+ este-full-immersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Livello 8 sbloccato: CORRIDOIO DEL CASTELLO!
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fl9-festa@feste-full-immersion
+DTSTAMP:20261030T090000Z
+DTSTART:20261115T140000Z
+DTEND:20261115T173000Z
+SUMMARY:🎂 Festa di Filippo · Livello 9 al Cinelandia
+LOCATION:Cinelandia Milano Certosa
+DESCRIPTION:Arrivo alle 15:00\, ritiro alle 18:30. Si affronta tutti insiem
+ e il castello! https://feste-full-immersion.github.io/filippo-livello-9/
+URL:https://feste-full-immersion.github.io/filippo-livello-9/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Domani c'è la festa di Filippo!
+TRIGGER:-PT18H
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Tra due ore la festa di Filippo al Cinelandia
+TRIGGER:-PT2H
+END:VALARM
+END:VEVENT
+END:VCALENDAR
