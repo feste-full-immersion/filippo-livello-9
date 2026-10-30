@@ -401,7 +401,7 @@ function migraProfilo(da,a){try{const pre="fl9_"+da+"_";const ks=[];for(let i=0;
   ls.set("profili",profili().filter(x=>x.id!==da));usaProfilo(a)}
 
 /* ---------- Collegamento al Foglio Google ---------- */
-const API="";
+const API="https://script.google.com/macros/s/AKfycbx0UH8JBAp1o3lc98Yo8iCBgBsE0KP6HWLi-uu1JybGgCCmEH8Q1N6lI9f95UcsQH659Q/exec";
 const CODICE_PROVA="1511";
 let STATO=null;
 async function api(azione,dati){if(!API)return null;
