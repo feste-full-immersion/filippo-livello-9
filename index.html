@@ -160,6 +160,33 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
 #dialogo .pannello{max-width:420px;text-align:center;align-items:center}
 #sottotitolo{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;max-width:440px;width:calc(100% - 32px);background:#000;border:3px solid var(--neon);color:var(--carta);font-size:15px;padding:10px 12px;border-radius:3px;display:none;text-align:center}
 #sottotitolo.on{display:block}
+/* ---------- Livello 9: il castello di Re Glitch ---------- */
+#boss{position:fixed;inset:0;z-index:8;background:#05030f;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;padding:14px 12px 70px;overflow:hidden}
+#boss.on{display:flex}
+#boss .b-hp{width:100%;max-width:900px}
+#boss .b-hp .lab{font-family:var(--pixel);font-size:clamp(11px,2.6vw,18px);color:#ff5fc8;text-align:center;margin-bottom:6px;text-shadow:2px 2px 0 #000}
+#boss .b-bar{height:clamp(22px,5vw,46px);border:4px solid #000;background:#2a0830;box-shadow:0 0 0 3px #ff5fc8;position:relative;overflow:hidden}
+#boss .b-bar i{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(180deg,#ff3b4e,#b5122c);transition:width .25s linear}
+#boss .b-bar i.ok{background:linear-gradient(180deg,#39ff6a,#1fae48)}
+#boss .b-bar i.mid{background:linear-gradient(180deg,#ffd23f,#d39a00)}
+#boss canvas{width:auto;max-width:min(100%,900px);height:min(50vh,calc((100vw - 24px)*.5625));aspect-ratio:16/9;image-rendering:pixelated;border:4px solid #000;box-shadow:0 0 0 3px #3fd2ff}
+#boss .b-cmd{font-family:var(--pixel);font-size:clamp(28px,9vw,88px);color:var(--sole);text-shadow:6px 6px 0 #000;text-align:center;line-height:1.15;min-height:1.2em}
+#boss .b-cmd.fin{font-size:clamp(16px,4.2vw,42px)}
+#boss .b-cmd.pulsa2{animation:bPulsa .5s ease-in-out infinite alternate}
+@keyframes bPulsa{to{transform:scale(1.08);color:#fff}}
+#boss .b-sub{font-family:var(--pixel);font-size:clamp(11px,2.6vw,20px);color:var(--neon);text-align:center;line-height:1.7;text-shadow:2px 2px 0 #000;max-width:900px}
+#boss .b-mic{width:min(100%,900px);height:12px;background:#111;border:2px solid #000}
+#boss .b-mic i{display:block;height:100%;width:0;background:#3fd2ff}
+#boss .b-regia{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,.6)}
+#boss .b-regia button{font-family:var(--pixel);font-size:11px;border:2px solid #000;border-radius:3px;padding:10px 12px;cursor:pointer}
+#boss .b-av{background:var(--sole);color:#000}
+#boss .b-man{background:#ff5fc8;color:#000;touch-action:none;user-select:none;-webkit-user-select:none}
+#boss .b-esci{background:#333;color:#fff}
+#boss .b-nomi{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;max-width:900px;font-family:var(--pixel);font-size:clamp(10px,2.2vw,16px);color:#fff}
+#boss .b-nomi span{background:#1546d1;border:2px solid #000;padding:6px 8px}
+#boss .b-fase{font-family:var(--pixel);font-size:9px;color:#aaa}
+
+#boss.on ~ #sottotitolo,#sottotitolo.boss{z-index:9;font-size:clamp(14px,3vw,22px)}
 </style>
 </head>
 <body>
@@ -417,6 +444,22 @@ legend{font-weight:600;font-size:15px;margin-bottom:6px}
     <button class="btn b-giallo" id="dOk">OK</button>
   </div>
 </div>
+
+<!-- LIVELLO 9 (solo per gli organizzatori, con il codice segreto) -->
+<div id="boss" role="dialog" aria-modal="true" aria-label="Livello 9: il castello di Re Glitch">
+  <div class="b-hp"><div class="lab">RE GLITCH</div><div class="b-bar"><i id="bHp"></i></div></div>
+  <canvas id="bCv" width="320" height="180" aria-hidden="true"></canvas>
+  <div class="b-cmd" id="bCmd">LIVELLO 9</div>
+  <div class="b-sub" id="bSub">IL CASTELLO DI RE GLITCH</div>
+  <div class="b-mic" id="bMicBox" hidden><i id="bMic"></i></div>
+  <div class="b-nomi" id="bNomi" hidden></div>
+  <div class="b-regia">
+    <button class="b-esci" id="bEsci" type="button">✕ ESCI</button>
+    <span class="b-fase" id="bFase"></span>
+    <button class="b-man" id="bMan" type="button" title="Tieni premuto per colpire Re Glitch">⚡ COLPO</button>
+    <button class="b-av" id="bAv" type="button">INIZIA ▶</button>
+  </div>
+</div>
 <div id="sottotitolo" aria-live="polite"></div>
 <div id="antDlg" class="modale" role="dialog" aria-modal="true" aria-labelledby="antTit">
   <div class="pannello">
@@ -503,6 +546,10 @@ function sfx(nome){if(!audioOn||!ac)return;const t=ac.currentTime;
 const BRANI={
  menu:{ms:200,lead:[76,0,79,76,72,74,76,0,77,0,81,77,74,76,77,0,79,0,84,79,76,77,79,0,81,79,77,76,74,72,74,0],
    basso:[48,55,48,55,53,60,53,60,55,62,55,62,50,57,55,55]},
+ boss:{ms:170,lead:[69,0,72,69,75,0,74,72,69,0,72,69,68,0,67,0,69,0,72,69,75,0,77,75,74,72,71,72,69,0,0,0],
+   basso:[45,45,45,45,44,44,43,43,45,45,45,45,41,41,40,40]},
+ vittoria:{ms:150,lead:[72,76,79,84,79,76,72,76,79,84,88,84,79,84,88,91,89,88,86,84,86,88,89,91,96,0,91,0,96,0,0,0],
+   basso:[48,48,53,53,55,55,48,48,53,53,55,55,60,60,60,60]},
  liv:{ms:140,lead:[72,79,76,79,72,79,76,79,74,81,77,81,74,81,77,81,76,83,79,83,76,83,79,83,77,76,74,72,71,72,74,79],
    basso:[48,48,48,48,50,50,50,50,52,52,52,52,53,55,55,55]}};
 function suona(nome,n){if(!audioOn||!musicaSi||!ac)return;const id=nome+(n||"");if(musica&&brano===id)return;musicaOff();brano=id;
@@ -588,7 +635,8 @@ function vai(id){document.querySelectorAll(".screen").forEach(s=>s.classList.tog
   if(id==="scelte")prepScelte();
   if(id==="ciao")prepCiao();
   if(id==="genitori")aggCal();}
-function dopoBoot(){if(API){$("proto").hidden=true;svuotaCoda();api("stato")}const r=store.get("risposta",null);
+function dopoBoot(){if(location.hash==="#livello9"&&!B.daLink){B.daLink=true;$("trCod").value="";$("trDlg").classList.add("on");$("trCod").focus();return}
+if(API){$("proto").hidden=true;svuotaCoda();api("stato")}const r=store.get("risposta",null);
   if(!r){vai("locandina");return}
   if(r==="no"){vai("ciao");return}
   if(!store.get("giocatore",null)){apriCrea();return}
@@ -735,7 +783,7 @@ function mostraTab(){if(store.get("risposta")!=="si"){vai("ciao");return}
     else if(aperto(n)){b.innerHTML=n+"<small>"+LIVELLI[n].nome+"<br>Gioca!</small>";b.onclick=()=>gioca(n)}
     else{b.classList.add("chiuso");b.innerHTML="🔒<small>Si apre il "+dataBreve(LIVELLI[n].apre)+"<br>Anteprima</small>";b.onclick=()=>anteprima(n)}
     gr.appendChild(b)}
-  const boss=document.createElement("button");boss.type="button";boss.className="liv boss";boss.onclick=()=>parla("castello","Vi aspetto nel mio castello… il quindici novembre! Eh eh eh!");boss.innerHTML="9<small id='cd'></small>";gr.appendChild(boss);
+  const boss=document.createElement("button");boss.type="button";boss.className="liv boss";boss.onclick=()=>{if(bossAperto())apriBoss();else parla("castello","Vi aspetto nel mio castello… il quindici novembre! Eh eh eh!")};boss.innerHTML="9<small id='cd'></small>";gr.appendChild(boss);
   const agg=()=>{const ms=FESTA-new Date();const el=document.getElementById("cd");if(!el)return;
     if(ms<=0){el.textContent="Si gioca alla festa!";return}const gg=Math.floor(ms/864e5),hh=Math.floor(ms/36e5)%24;el.textContent="Castello di Re Glitch · tra "+gg+" g "+hh+" h"};
   agg();clearInterval(countT);countT=setInterval(agg,30000);
@@ -748,8 +796,8 @@ function aggContatore(){aggCom();if(API&&STATO){$("pronti").textContent=STATO.pr
     $("classifica").innerHTML="";l.forEach(x=>{const li=document.createElement("li");li.textContent=x.nick+" · "+x.candeline+" candeline · "+x.monete+" monete";$("classifica").appendChild(li)})}
   else if(!API){$("pronti").textContent=store.get("risposta")==="si"?8:7}}
 $("titTab").onclick=()=>{if(++tapTit>=5){tapTit=0;$("trCod").value="";$("trDlg").classList.add("on");$("trCod").focus()}};
-$("trNo").onclick=()=>$("trDlg").classList.remove("on");
-$("trOk").onclick=()=>{$("trDlg").classList.remove("on");if($("trCod").value.trim()!==CODICE_PROVA)return;store.set("prova",!prova());sfx("aiuto");mostraTab();
+$("trNo").onclick=()=>{$("trDlg").classList.remove("on");if(B.daLink&&$("boot").classList.contains("on")){history.replaceState(null,"",location.pathname);dopoBoot()}};
+$("trOk").onclick=()=>{$("trDlg").classList.remove("on");if(B.daLink&&$("boot").classList.contains("on")){if($("trCod").value.trim()===CODICE_PROVA){store.set("prova",true);apriBoss()}else{history.replaceState(null,"",location.pathname);dopoBoot()}return}if($("trCod").value.trim()!==CODICE_PROVA)return;store.set("prova",!prova());sfx("aiuto");mostraTab();
   dialogo(prova()?"TRUCCO ATTIVO":"TRUCCO SPENTO",prova()?"Tutti i livelli sono aperti per la prova.":"I livelli tornano ad aprirsi alle loro date.")};
 $("menuBtn").onclick=()=>{const m=$("menuTab");const on=!m.classList.contains("on");m.classList.toggle("on",on);$("menuBtn").setAttribute("aria-expanded",on);sfx("click")};
 $("mLocandina").onclick=()=>{$("menuTab").classList.remove("on");vai("locandina");$("aRisposta").textContent="AVANTI ▶";daMenu=true};
@@ -774,6 +822,98 @@ aggCal();
 $("mCome").onclick=()=>{$("menuTab").classList.remove("on");daMenuCome=true;come(0)};
 $("mAudio").onclick=()=>{audioOn=!audioOn;store.set("audio",audioOn);if(audioOn){initAudio();suona("menu")}else{musicaOff();try{voce.pause()}catch(e){}}$("mAudio").textContent="AUDIO: "+(audioOn?"SÌ":"NO");sfx("click")};
 $("mMusica").onclick=()=>{musicaSi=!musicaSi;store.set("musica",musicaSi);if(musicaSi){initAudio();suona("menu")}else musicaOff();$("mMusica").textContent="MUSICA: "+(musicaSi?"SÌ":"NO");sfx("click")};
+
+
+/* ---------- Livello 9: la battaglia finale alla festa ----------
+   Si apre dal riquadro 9 del tabellone solo con il trucco degli organizzatori attivo.
+   Chi regge il tablet preme AVANTI tra una fase e l'altra; il microfono misura il rumore dei bambini.
+   Se il microfono non va o c'è troppo rumore di fondo, tenere premuto ⚡ COLPO: la barra scende lo stesso.
+   Ogni attacco porta comunque la barra al suo traguardo, così la storia finisce sempre con la vittoria. */
+const BOSS_FASI=[
+ {id:"b_intro",chi:"re",txt:"Benvenuti nel mio castello, piccoli giocatori! Le nove candeline di Filippo sono mie… e nessuno me le porterà via! Ah ah ah!"},
+ {id:"b_a1",cmd:"APPLAUSO!",sub:"IL PIÙ GRANDE APPLAUSO DELLA STORIA!",txt:"Giocatori, Re Glitch ha paura del rumore! Primo attacco: il più grande applauso della storia!",hp:66,dopo:{id:"b_r1",txt:"Ahia! Le mie orecchie di pixel! Ma non basta…"}},
+ {id:"b_a2",cmd:"FI-LIP-PO!",sub:"GRIDATE TUTTI IL NOME DEL FESTEGGIATO!",txt:"Secondo attacco: tutti insieme, gridate il nome del festeggiato!",hp:33,dopo:{id:"b_r2",txt:"Noooo! Mi state facendo glitchare! Ma sono ancora in piedi!"}},
+ {id:"b_a3",cmd:"PIEDI!",sub:"BATTETE I PIEDI A TERRA: FACCIAMO TREMARE IL CASTELLO!",txt:"Ultimo attacco! Battete i piedi a terra più forte che potete! Facciamo tremare il castello!",hp:0,dopo:{id:"b_fine",txt:"Nooo… mi sto… sgretolando… le candeline… tornano… a Filippo…"}},
+ {id:"b_vinto",txt:"Ce l'avete fatta! Le nove candeline sono libere! Tanti auguri, Filippo!"}];
+const B={fase:-1,hp:100,colpo:0,ascolto:false,mic:null,an:null,buf:null,base:.02,liv:0,man:false,raf:0,lock:null,parts:[],cand:[],stato:"",t0:0,shake:0};
+const bcv=$("bCv"),bg=bcv.getContext("2d");
+function bossAperto(){return prova()}
+function apriBoss(){B.fase=-1;B.hp=100;B.stato="titolo";B.parts=[];B.cand=[];$("boss").classList.add("on");$("sottotitolo").classList.add("boss");
+  $("bCmd").textContent="LIVELLO 9";$("bCmd").classList.remove("pulsa2","fin");$("bSub").textContent="IL CASTELLO DI RE GLITCH";$("bNomi").hidden=true;$("bMicBox").hidden=true;
+  $("bAv").textContent="INIZIA ▶";$("bAv").disabled=false;$("bFase").textContent="Regia: premi INIZIA (chiede il microfono)";aggHp();
+  try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}
+  try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>B.lock=l).catch(()=>{})}catch(e){}
+  musicaOff();if(API)api("stato");cancelAnimationFrame(B.raf);B.raf=requestAnimationFrame(bLoop)}
+function chiudiBoss(){$("boss").classList.remove("on");$("sottotitolo").classList.remove("boss");cancelAnimationFrame(B.raf);B.ascolto=false;
+  try{B.mic&&B.mic.getTracks().forEach(t=>t.stop())}catch(e){}B.mic=null;B.an=null;try{B.lock&&B.lock.release()}catch(e){}
+  try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}musicaOff();suona("menu");
+  if(B.daLink&&$("boot").classList.contains("on")){history.replaceState(null,"",location.pathname);dopoBoot()}}
+$("bEsci").onclick=()=>{if(confirmEsci())chiudiBoss()};
+function confirmEsci(){if(B.stato==="titolo"||B.stato==="fine")return true;$("bFase").textContent="Premi di nuovo ✕ per uscire";if(B._esci){B._esci=false;return true}B._esci=true;setTimeout(()=>B._esci=false,2500);return false}
+function aggHp(){const i=$("bHp");i.style.width=Math.max(0,B.hp)+"%";i.className=B.hp>66?"":B.hp>33?"mid":"ok"}
+async function bMic(){try{const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    initAudio();const src=ac.createMediaStreamSource(st);const an=ac.createAnalyser();an.fftSize=1024;src.connect(an);B.mic=st;B.an=an;B.buf=new Float32Array(an.fftSize);return true}
+  catch(e){return false}}
+function bLivello(){if(!B.an)return 0;B.an.getFloatTimeDomainData(B.buf);let q=0;for(const v of B.buf)q+=v*v;return Math.sqrt(q/B.buf.length)}
+async function bCalibra(){const v=[];const t=performance.now();while(performance.now()-t<1800){v.push(bLivello());await new Promise(r=>setTimeout(r,60))}
+  v.sort((a,b)=>a-b);B.base=Math.max(.008,v[Math.floor(v.length*.7)]||.02)}
+function bParla(id,txt,poi){parla(id,txt);$("sottotitolo").classList.add("boss");if(poi)setTimeout(poi,Math.max(2600,txt.length*62))}
+$("bAv").onclick=async()=>{sfx("click");const b=$("bAv");
+  if(B.stato==="titolo"){b.disabled=true;$("bFase").textContent="Accendo il microfono…";const ok=await bMic();
+    $("bFase").textContent=ok?"Silenzio un attimo: misuro il rumore della sala…":"Microfono non disponibile: usa ⚡ COLPO";if(ok)await bCalibra();
+    B.stato="intro";$("bCmd").textContent="";$("bSub").textContent="";suona("boss");B.t0=performance.now();sfx("colpo");
+    bParla("b_intro",BOSS_FASI[0].txt,()=>{b.disabled=false;b.textContent="1° ATTACCO ▶";$("bFase").textContent="Quando i bambini sono pronti: AVANTI"});return}
+  if(B.stato==="intro"||B.stato==="pausa"){const n=B.stato==="intro"?1:B.fase+1;if(n>3)return;b.disabled=true;bAttacco(n);return}
+  if(B.stato==="vinto"){b.disabled=true;bFinale();return}
+  if(B.stato==="fine"){chiudiBoss()}};
+function bAttacco(n){B.fase=n;const F=BOSS_FASI[n];B.stato="annuncio";$("bCmd").textContent=F.cmd;$("bCmd").classList.remove("pulsa2");$("bSub").textContent=F.sub;
+  $("bFase").textContent="Attacco "+n+" di 3";
+  bParla(F.id,F.txt,()=>{let c=3;const tick=()=>{if(c>0){$("bCmd").textContent=c;sfx("click");c--;setTimeout(tick,800)}else{
+      $("bCmd").textContent=F.cmd;$("bCmd").classList.add("pulsa2");sfx("start");musicaOff();B.stato="ascolto";B.ascolto=true;$("bMicBox").hidden=false;
+      const inizio=B.hp,meta=F.hp,durata=8000,t0=performance.now();
+      const fine=()=>{B.ascolto=false;$("bMicBox").hidden=true;$("bCmd").classList.remove("pulsa2");
+        const da=B.hp;const t1=performance.now();const scendi=()=>{const k=Math.min(1,(performance.now()-t1)/700);B.hp=da+(meta-da)*k;aggHp();if(k<1)requestAnimationFrame(scendi);else dopoAttacco(n)};scendi()};
+      const giro=()=>{if(!B.ascolto)return;const el=performance.now()-t0;
+        if(B.hp<=meta+.5||el>=durata){fine();return}requestAnimationFrame(giro)};
+      B.danno=(inizio-meta)/durata*1000*1.6;giro()}};tick()})}
+function dopoAttacco(n){const F=BOSS_FASI[n];sfx("colpo");B.shake=18;
+  if(n<3){B.stato="colpito";suona("boss");$("bCmd").textContent="COLPITO!";$("bSub").textContent="";
+    bParla(F.dopo.id,F.dopo.txt,()=>{B.stato="pausa";const b=$("bAv");b.disabled=false;b.textContent=(n+1)+"° ATTACCO ▶";$("bFase").textContent="Quando i bambini sono pronti: AVANTI"})}
+  else{B.stato="sgretola";musicaOff();$("bCmd").textContent="";$("bSub").textContent="";bEsplodi();
+    bParla(F.dopo.id,F.dopo.txt,()=>{B.stato="vinto";const b=$("bAv");b.disabled=false;b.textContent="LIBERA LE CANDELINE ▶";$("bFase").textContent="Pronti con la torta? AVANTI"})}}
+function bEsplodi(){B.parts=[];const s=5,ox=160-8*s,oy=26;RE.forEach((r,y)=>r.split("").forEach((ch,x)=>{const col=PAL_RE[ch];if(!col)return;
+  B.parts.push({x:ox+x*s,y:oy+y*s,vx:(Math.random()-.5)*4,vy:-Math.random()*4-1,c:col,s})}));sfx("gameover")}
+function bFinale(){B.stato="candele";const cs=candelaCv(true);B.cand=[];for(let i=0;i<9;i++)B.cand.push({x:160,y:120,tx:52+i*27,ty:58+Math.abs(i-4)*6,d:i*220,cv:cs});
+  suona("vittoria");sfx("vittoria");$("bCmd").textContent="LE 9 CANDELINE SONO LIBERE!";$("bCmd").classList.add("fin");
+  bParla("b_vinto",BOSS_FASI[4].txt,()=>{const nomi=(STATO&&STATO.presi)||[];const box=$("bNomi");box.innerHTML="";
+    nomi.forEach(n=>{const s=document.createElement("span");s.textContent=n;box.appendChild(s)});box.hidden=!nomi.length;
+    $("bSub").textContent="LA SQUADRA DI FILIPPO HA VINTO! 🎂 E ADESSO… LA TORTA!";B.stato="fine";const b=$("bAv");b.disabled=false;b.textContent="FINE ✓";$("bFase").textContent=""})}
+/* Colpo manuale: tieni premuto (o barra spaziatrice) */
+const bMan=$("bMan");const manOn=e=>{e.preventDefault();B.man=true},manOff=()=>{B.man=false};
+bMan.addEventListener("pointerdown",manOn);["pointerup","pointerleave","pointercancel"].forEach(t=>bMan.addEventListener(t,manOff));
+addEventListener("keydown",e=>{if($("boss").classList.contains("on")&&e.code==="Space"){e.preventDefault();B.man=true}});
+addEventListener("keyup",e=>{if(e.code==="Space")B.man=false});
+function bLoop(t){B.raf=requestAnimationFrame(bLoop);const g=bg,W=320,H=180;
+  /* rumore e danno */
+  let liv=0;if(B.ascolto){const l=bLivello();liv=Math.max(0,Math.min(1,(l-B.base*1.3)/(B.base*6+.02)));if(B.man)liv=Math.max(liv,.85);
+    $("bMic").style.width=(liv*100)+"%";const meta=BOSS_FASI[B.fase].hp;if(liv>.05){B.hp=Math.max(meta,B.hp-B.danno*liv/60);aggHp();B.shake=Math.max(B.shake,liv*8);if(Math.random()<liv*.12)sfx("salto")}}
+  /* sfondo: cielo e castello */
+  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,"#06103a");gr.addColorStop(1,B.stato==="candele"||B.stato==="fine"?"#1546d1":"#2a0830");g.fillStyle=gr;g.fillRect(0,0,W,H);
+  let sd=3;const rr=()=>{sd=(sd*9301+49297)%233280;return sd/233280};g.fillStyle="#fff";for(let i=0;i<60;i++){g.globalAlpha=.3+.7*Math.abs(Math.sin(t/700+i));g.fillRect(rr()*W|0,rr()*110|0,1,1)}g.globalAlpha=1;
+  g.save();g.translate(118,102);g.scale(4,4);mappa(g,CASTELLO,{T:"#ff3bd4",B:"#3a0b44",L:"#5c1670",N:Math.floor(t/400)%2?"#39ff6a":"#3fd2ff",D:"#000"},0,0);g.restore();
+  g.fillStyle="#04210e";g.fillRect(0,150,W,30);g.fillStyle="#39ff6a";g.fillRect(0,150,W,1);
+  /* Re Glitch */
+  if(["intro","annuncio","ascolto","colpito","pausa"].includes(B.stato)){const sh=B.shake;B.shake*=.88;const dx=(Math.random()-.5)*sh,dy=(Math.random()-.5)*sh;
+    const s=5,ox=160-8*s+dx,oy=26+dy+Math.sin(t/400)*3;g.save();g.translate(ox,oy);g.scale(s,s);mappa(g,RE,PAL_RE,0,0,B.stato!=="intro"||Math.random()<.3);g.restore();
+    if(B.stato==="intro"){const k=Math.min(1,(t-B.t0)/1200);g.fillStyle="rgba(5,3,15,"+(1-k)+")";g.fillRect(0,0,W,H)}}
+  /* candeline prigioniere sopra il castello */
+  if(["titolo","intro","annuncio","ascolto","colpito","pausa"].includes(B.stato)){const cs=candelaCv(true);for(let i=0;i<9;i++){g.globalAlpha=.55;g.drawImage(cs,52+i*27,8+Math.abs(i-4)*3,7,11)}g.globalAlpha=1}
+  /* esplosione */
+  B.parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;g.fillStyle=p.c;g.fillRect(p.x,p.y,p.s,p.s)});B.parts=B.parts.filter(p=>p.y<H+10);
+  /* candeline che volano */
+  if(B.stato==="candele"||B.stato==="fine"){const now=performance.now();B.cand.forEach(c=>{if(!c.s)c.s=now+c.d;const k=Math.max(0,Math.min(1,(now-c.s)/900));
+    const x=c.x+(c.tx-c.x)*k,y=c.y+(c.ty-c.y)*k-Math.sin(k*Math.PI)*40;g.save();g.translate(x,y);g.scale(2,2);g.drawImage(c.cv,-3,-5);g.restore();
+    if(k>0&&k<1&&Math.random()<.3){g.fillStyle="#ffd23f";g.fillRect(x+(Math.random()-.5)*10,y+10,2,2)}})}}
 
 /* ---------- Motore di gioco ---------- */
 const cv=$("cv"),ctxGioco=cv.getContext("2d");let ctx=ctxGioco;const W=256,H=224,SUOLO=196;
